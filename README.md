@@ -22,3 +22,10 @@ while True:
 Complete API documentation can be found [here](https://simple-pid.readthedocs.io/en/latest/simple_pid.html#module-simple_pid.PID).
 
 ## Installation
+To install, run:
+```
+pip install simple-pid
+```
+
+## License
+Licensed under the [MIT License](https://github.com/m-lundberg/simple-pid/blob/master/LICENSE.md).
