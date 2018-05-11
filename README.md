@@ -19,6 +19,6 @@ while True:
     v = controlled_system.update(control)
 ```
 
-Complete API documentation can be found [here]().
+Complete API documentation can be found [here](https://simple-pid.readthedocs.io/en/latest/simple_pid.html#module-simple_pid.PID).
 
 ## Installation
