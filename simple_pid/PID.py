@@ -12,7 +12,7 @@ def _clamp(value, limits):
     return value
 
 
-class PID:
+class PID(object):
     """
     A simple PID controller. No fuss.
     """
