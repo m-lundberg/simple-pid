@@ -2,6 +2,9 @@ venv/
 docs/build
 __pycache__/
 *.egg-info/
+.eggs/
 dist/
 build/
+.pytest_cache/
+.tox/
 *.pyc

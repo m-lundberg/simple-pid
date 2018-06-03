@@ -69,5 +69,11 @@ To eliminate overshoot in certain types of systems, you can calculate the [propo
 pid.proportional_on_measurement = True
 ```
 
+## Tests
+Use the following to run tests:
+```
+tox
+```
+
 ## License
 Licensed under the [MIT License](https://github.com/m-lundberg/simple-pid/blob/master/LICENSE.md).
