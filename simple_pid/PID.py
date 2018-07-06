@@ -53,9 +53,7 @@ class PID(object):
         
         dt = time.time() - self._last_time
 
-        if self.sample_time is not None \
-           and dt < self.sample_time \
-           and self._last_output is not None:
+        if self.sample_time is not None and dt < self.sample_time and self._last_output is not None:
             # only update every sample_time seconds
             return self._last_output
 
