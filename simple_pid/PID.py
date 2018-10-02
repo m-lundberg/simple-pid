@@ -1,4 +1,5 @@
 import time
+import warnings
 
 
 def _clamp(value, limits):
@@ -10,6 +11,15 @@ def _clamp(value, limits):
     elif lower is not None and value < lower:
         return lower
     return value
+
+
+try:
+    # get monotonic time to ensure that time deltas are always positive
+    _current_time = time.monotonic
+except AttributeError:
+    # time.monotonic() not available (using python < 3.3), fallback to time.time()
+    _current_time = time.time
+    warnings.warn('time.monotonic() not available, using time.time() as fallback. Consider using Python 3.3 or newer to get monotonic time measurements.')
 
 
 class PID(object):
@@ -37,7 +47,7 @@ class PID(object):
         
         self._error_sum = 0
 
-        self._last_time = time.time()
+        self._last_time = _current_time()
         self._last_output = None
         self._proportional = 0
         self._last_input = None
@@ -50,8 +60,9 @@ class PID(object):
         """
         if not self.auto_mode:
             return self._last_output
-        
-        dt = time.time() - self._last_time
+
+        now = _current_time()
+        dt = now - self._last_time
 
         if self.sample_time is not None and dt < self.sample_time and self._last_output is not None:
             # only update every sample_time seconds
@@ -81,7 +92,7 @@ class PID(object):
         # keep track of state
         self._last_output = output
         self._last_input = input_
-        self._last_time = time.time()
+        self._last_time = now
 
         return output
 

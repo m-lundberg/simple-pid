@@ -8,3 +8,5 @@ build/
 .pytest_cache/
 .tox/
 *.pyc
+.idea/
+.envrc

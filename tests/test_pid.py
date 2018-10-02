@@ -1,4 +1,4 @@
-
+import sys
 import time
 import pytest
 from simple_pid import PID
@@ -97,6 +97,15 @@ def test_sample_time():
 
     # last value should be returned again
     assert pid(100) == control
+
+
+def test_monotonic():
+    from simple_pid.PID import _current_time
+    
+    if sys.version_info < (3, 3):
+        assert _current_time == time.time
+    else:
+        assert _current_time == time.monotonic
 
 
 def test_clamp():
