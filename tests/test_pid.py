@@ -1,6 +1,5 @@
 import sys
 import time
-import pytest
 from simple_pid import PID
 
 
@@ -30,7 +29,7 @@ def test_I():
 
     assert round(pid(0)) == 10.0  # make sure we are close to expected value
     time.sleep(0.1)
-    
+
     assert round(pid(0)) == 20.0
 
 
@@ -101,7 +100,7 @@ def test_sample_time():
 
 def test_monotonic():
     from simple_pid.PID import _current_time
-    
+
     if sys.version_info < (3, 3):
         assert _current_time == time.time
     else:
@@ -111,8 +110,8 @@ def test_monotonic():
 def test_clamp():
     from simple_pid.PID import _clamp
 
-    assert _clamp(None, (None, None)) == None
-    assert _clamp(None, (-10, 10)) == None
+    assert _clamp(None, (None, None)) is None
+    assert _clamp(None, (-10, 10)) is None
 
     # no limits
     assert _clamp(0, (None, None)) == 0
@@ -140,7 +139,7 @@ def test_clamp():
 def test_converge_system():
     pid = PID(1, 0.8, 4, setpoint=5, output_limits=(-5, 5))
     PV = 0  # process variable
-    
+
     def update_system(C, dt):
         # calculate a simple system model
         return PV + C*dt - 1*dt

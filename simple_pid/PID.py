@@ -19,32 +19,46 @@ try:
 except AttributeError:
     # time.monotonic() not available (using python < 3.3), fallback to time.time()
     _current_time = time.time
-    warnings.warn('time.monotonic() not available, using time.time() as fallback. Consider using Python 3.3 or newer to get monotonic time measurements.')
+    warnings.warn('time.monotonic() not available in python < 3.3, using time.time() as fallback')
 
 
 class PID(object):
     """
     A simple PID controller. No fuss.
     """
-    def __init__(self, Kp=1.0, Ki=0.0, Kd=0.0, setpoint=0, sample_time=0.01, output_limits=(None, None), auto_mode=True, proportional_on_measurement=False):
+    def __init__(self,
+                 Kp=1.0, Ki=0.0, Kd=0.0,
+                 setpoint=0,
+                 sample_time=0.01,
+                 output_limits=(None, None),
+                 auto_mode=True,
+                 proportional_on_measurement=False):
         """
         :param Kp: The value for the proportional gain Kp
         :param Ki: The value for the integral gain Ki
         :param Kd: The value for the derivative gain Kd
         :param setpoint: The initial setpoint that the PID will try to achieve
-        :param sample_time: The time in seconds which the controller should wait before generating a new output value. The PID works best when it is constantly called (eg. during a loop), but with a sample time set so that the time difference between each update is (close to) constant. If set to None, the PID will compute a new output value every time it is called.
-        :param output_limits: The initial output limits to use, given as an iterable with 2 elements, for example: (lower, upper). The output will never go below the lower limit or above the upper limit. Either of the limits can also be set to None to have no limit in that direction. Setting output limits also avoids integral windup, since the integral term will never be allowed to grow outside of the limits.
+        :param sample_time: The time in seconds which the controller should wait before generating a new output value.
+        The PID works best when it is constantly called (eg. during a loop), but with a sample time set so that the
+        time difference between each update is (close to) constant. If set to None, the PID will compute a new output
+        value every time it is called.
+        :param output_limits: The initial output limits to use, given as an iterable with 2 elements, for
+        example: (lower, upper). The output will never go below the lower limit or above the upper limit. Either of
+        the limits can also be set to None to have no limit in that direction. Setting output limits also avoids
+        integral windup, since the integral term will never be allowed to grow outside of the limits.
         :param auto_mode: Whether the controller should be enabled (in auto mode) or not (in manual mode)
-        :param proportional_on_measurement: Whether the proportional term should be calculated on the input directly rather than on the error (which is the traditional way). Using proportional-on-measurement avoids overshoot for some types of systems.
+        :param proportional_on_measurement: Whether the proportional term should be calculated on the input directly
+        rather than on the error (which is the traditional way). Using proportional-on-measurement avoids overshoot
+        for some types of systems.
         """
         self.Kp, self.Ki, self.Kd = Kp, Ki, Kd
         self.setpoint = setpoint
         self.sample_time = sample_time
-        
+
         self._min_output, self._max_output = output_limits
         self._auto_mode = auto_mode
         self.proportional_on_measurement = proportional_on_measurement
-        
+
         self._error_sum = 0
 
         self._last_time = _current_time()
@@ -54,9 +68,9 @@ class PID(object):
 
     def __call__(self, input_):
         """
-        Call the PID controller with *input_* and calculate and return a control output if sample_time seconds has passed
-        since the last update. If no new output is calculated, return the previous output instead (or None if no value
-        has been calculated yet).
+        Call the PID controller with *input_* and calculate and return a control output if sample_time seconds has
+        passed since the last update. If no new output is calculated, return the previous output instead (or None if
+        no value has been calculated yet).
         """
         if not self.auto_mode:
             return self._last_output
@@ -125,7 +139,10 @@ class PID(object):
 
     @property
     def output_limits(self):
-        """The current output limits as a 2-tuple: (lower, upper). See also the *output_limts* parameter in :meth:`PID.__init__`."""
+        """
+        The current output limits as a 2-tuple: (lower, upper). See also the *output_limts* parameter in
+        :meth:`PID.__init__`.
+        """
         return (self._min_output, self._max_output)
 
     @output_limits.setter
@@ -134,7 +151,7 @@ class PID(object):
         if limits is None:
             self._min_output, self._max_output = None, None
             return
-        
+
         min_output, max_output = limits
 
         if None not in limits and max_output < min_output:

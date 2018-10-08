@@ -10,3 +10,5 @@ build/
 *.pyc
 .idea/
 .envrc
+build.sh
+total_downloads.py

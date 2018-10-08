@@ -50,7 +50,7 @@ if __name__ == '__main__':
         if current_time - start_time > 1:
             pid.setpoint = 100
 
-        last_time = current_time         
+        last_time = current_time
 
     plt.plot(x, y, label='measured')
     plt.plot(x, setpoint, label='target')
