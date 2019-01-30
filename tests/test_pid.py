@@ -115,6 +115,25 @@ def test_monotonic():
         assert _current_time == time.monotonic
 
 
+def test_auto_mode():
+    pid = PID(1, 0, 0, setpoint=10, sample_time=None)
+
+    # ensure updates happen by default
+    assert pid(0) == 10
+    assert pid(5) == 5
+
+    # ensure no new updates happen when auto mode is off
+    pid.auto_mode = False
+    assert pid(1) == 5
+    assert pid(7) == 5
+
+    # should reset when reactivating
+    pid.auto_mode = True
+    assert pid._last_input is None
+    assert pid._error_sum == 0
+    assert pid(8) == 2
+
+
 def test_clamp():
     from simple_pid.PID import _clamp
 
