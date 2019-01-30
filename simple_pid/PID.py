@@ -101,7 +101,7 @@ class PID(object):
         self._error_sum = _clamp(self._error_sum, self.output_limits)
 
         # compute final output
-        output = self._proportional + self._error_sum - self.Kd * d_input
+        output = self._proportional + self._error_sum - self.Kd * d_input / dt
         output = _clamp(output, self.output_limits)
 
         # keep track of state
@@ -144,7 +144,7 @@ class PID(object):
         The current output limits as a 2-tuple: (lower, upper). See also the *output_limts* parameter in
         :meth:`PID.__init__`.
         """
-        return (self._min_output, self._max_output)
+        return self._min_output, self._max_output
 
     @output_limits.setter
     def output_limits(self, limits):

@@ -44,32 +44,40 @@ def test_I_negative_setpoint():
 
 
 def test_D():
-    pid = PID(0, 0, 1, setpoint=10, sample_time=None)
+    pid = PID(0, 0, 0.1, setpoint=10, sample_time=0.1)
 
-    # should not compute derivate when there is no previous input (don't assume 0 as first input)
+    # should not compute derivative when there is no previous input (don't assume 0 as first input)
     assert pid(0) == 0
+    time.sleep(0.1)
 
-    # derivate is 0 when input is the same
+    # derivative is 0 when input is the same
     assert pid(0) == 0
     assert pid(0) == 0
+    time.sleep(0.1)
 
-    assert pid(5) == -5
-    assert pid(20) == -15
+    assert round(pid(5)) == -5
+    time.sleep(0.1)
+    assert round(pid(15)) == -10
 
 
 def test_D_negative_setpoint():
-    pid = PID(0, 0, 1, setpoint=-10, sample_time=None)
+    pid = PID(0, 0, 0.1, setpoint=-10, sample_time=0.1)
+    time.sleep(0.1)
 
-    # should not compute derivate when there is no previous input (don't assume 0 as first input)
+    # should not compute derivative when there is no previous input (don't assume 0 as first input)
     assert pid(0) == 0
+    time.sleep(0.1)
 
-    # derivate is 0 when input is the same
+    # derivative is 0 when input is the same
     assert pid(0) == 0
     assert pid(0) == 0
+    time.sleep(0.1)
 
-    assert pid(5) == -5
-    assert pid(-5) == 10
-    assert pid(-30) == 25
+    assert round(pid(5)) == -5
+    time.sleep(0.1)
+    assert round(pid(-5)) == 10
+    time.sleep(0.1)
+    assert round(pid(-15)) == 10
 
 
 def test_desired_state():
@@ -137,7 +145,7 @@ def test_clamp():
 
 
 def test_converge_system():
-    pid = PID(1, 0.8, 4, setpoint=5, output_limits=(-5, 5))
+    pid = PID(1, 0.8, 0.04, setpoint=5, output_limits=(-5, 5))
     PV = 0  # process variable
 
     def update_system(C, dt):
