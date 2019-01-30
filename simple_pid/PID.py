@@ -60,11 +60,12 @@ class PID(object):
         self._auto_mode = auto_mode
         self.proportional_on_measurement = proportional_on_measurement
 
+        self._proportional = 0
         self._error_sum = 0
+        self._derivative = 0
 
         self._last_time = _current_time()
         self._last_output = None
-        self._proportional = 0
         self._last_input = None
 
     def __call__(self, input_):
@@ -87,6 +88,7 @@ class PID(object):
         error = self.setpoint - input_
         self._error_sum += self.Ki * error * dt
         d_input = input_ - (self._last_input if self._last_input is not None else input_)
+        self._derivative = -self.Kd * d_input / dt
 
         # compute the proportional term
         if not self.proportional_on_measurement:
@@ -101,7 +103,7 @@ class PID(object):
         self._error_sum = _clamp(self._error_sum, self.output_limits)
 
         # compute final output
-        output = self._proportional + self._error_sum - self.Kd * d_input / dt
+        output = self._proportional + self._error_sum + self._derivative
         output = _clamp(output, self.output_limits)
 
         # keep track of state
@@ -110,6 +112,15 @@ class PID(object):
         self._last_time = now
 
         return output
+
+    @property
+    def components(self):
+        """
+        The P-, I- and D-terms from the last computation as separate components as a tuple. Useful for visualizing
+        what the controller is doing or when tuning hard-to-tune systems.
+        Note: when using *proportional_on_measurement*, the proportional error will be baked into the I-term.
+        """
+        return self._proportional, self._error_sum, self._derivative
 
     @property
     def tunings(self):

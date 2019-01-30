@@ -134,6 +134,17 @@ def test_auto_mode():
     assert pid(8) == 2
 
 
+def test_separate_components():
+    pid = PID(1, 0, 1, setpoint=10, sample_time=0.1)
+
+    assert pid(0) == 10
+    assert pid.components == (10, 0, 0)
+    time.sleep(0.1)
+
+    assert round(pid(5)) == -45
+    assert tuple(round(term) for term in pid.components) == (5, 0, -50)
+
+
 def test_clamp():
     from simple_pid.PID import _clamp
 
