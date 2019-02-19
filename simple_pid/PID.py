@@ -144,7 +144,27 @@ class PID(object):
             # switching from manual mode to auto, reset
             self._last_output = None
             self._last_input = None
-            self._error_sum = 0
+            self._last_time = _current_time()
+            self._error_sum = _clamp(0, self.output_limits)
+
+        self._auto_mode = enabled
+
+    def set_auto_mode(self, enabled, last_output=None):
+        """
+        Enable or disable the PID controller, optionally setting the last output value.
+        This is useful if some system has been manually controlled and if the PID should take over.
+        In that case, pass the last output variable (the control variable) and it will be set as the starting
+        I-term when the PID is set to auto mode.
+        :param enabled: Whether auto mode should be enabled, True or False
+        :param last_output: The last output, or the control variable, that the PID should start from
+                            when going from manual mode to auto mode
+        """
+        if enabled and not self._auto_mode:
+            # switching from manual mode to auto, reset
+            self._last_output = last_output
+            self._last_input = None
+            self._last_time = _current_time()
+            self._error_sum = (last_output if last_output is not None else 0)
             self._error_sum = _clamp(self._error_sum, self.output_limits)
 
         self._auto_mode = enabled
