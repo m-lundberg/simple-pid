@@ -133,6 +133,18 @@ def test_auto_mode():
     assert pid._error_sum == 0
     assert pid(8) == 2
 
+    # last update time should be reset to avoid huge dt
+    from simple_pid.PID import _current_time
+    pid.auto_mode = False
+    time.sleep(1)
+    pid.auto_mode = True
+    assert _current_time() - pid._last_time < 0.01
+
+    # check that setting last_output works
+    pid.auto_mode = False
+    pid.set_auto_mode(True, last_output=10)
+    assert pid._error_sum == 10
+
 
 def test_separate_components():
     pid = PID(1, 0, 1, setpoint=10, sample_time=0.1)
