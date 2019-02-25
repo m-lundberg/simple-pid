@@ -62,11 +62,28 @@ To disable the PID so that no new values are computed, set auto mode to False:
 pid.auto_mode = False  # no new values will be computed when pid is called
 pid.auto_mode = True   # pid is enabled again
 ```
+When disabling the PID and controlling a system manually, it might be useful to tell the PID controller where to start from when giving back control to it. This can be done by enabling auto mode like this:
+```python
+pid.set_auto_mode(True, last_output=8.0)
+```
+This will set the I-term to the value given to `last_output`, meaning that if the system that is being controlled was stable at that output value the PID will keep the system stable if started from that point, without any big bumps in the output when turning the PID back on.
+
+When disabling the PID and controlling a system manually, it might be useful to tell the PID controller where to start from when giving back control to it. This can be done by enabling auto mode like this:
+```python
+pid.set_auto_mode(True, last_output=8.0)
+```
+This will set the I-term to the value given to `last_output`, meaning that if the system that is being controlled was stable at that output value the PID will keep the system stable if started from that point, without any big bumps in the output when turning the PID back on.
+
 
 In order to get output values in a certain range, and also to avoid [integral windup](https://en.wikipedia.org/wiki/Integral_windup) (since the integral term will never be allowed to grow outside of these limits), the output can be limited to a range:
 ```python
 pid.output_limits = (0, 10)    # output value will be between 0 and 10
 pid.output_limits = (0, None)  # output will always be above 0, but with no upper bound
+```
+
+When tuning the PID, it can be useful to see how each of the components contribute to the output. They can be seen like this:
+```python
+p, i, d = pid.components  # the separate terms are now in p, i, d
 ```
 
 To eliminate overshoot in certain types of systems, you can calculate the [proportional term directly on the measurement](http://brettbeauregard.com/blog/2017/06/introducing-proportional-on-measurement/) instead of the error. This can be enabled like this:
