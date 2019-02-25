@@ -61,7 +61,7 @@ class PID(object):
         self.proportional_on_measurement = proportional_on_measurement
 
         self._proportional = 0
-        self._error_sum = 0
+        self._integral = 0
         self._derivative = 0
 
         self._last_time = _current_time()
@@ -86,9 +86,7 @@ class PID(object):
 
         # compute error terms
         error = self.setpoint - input_
-        self._error_sum += self.Ki * error * dt
         d_input = input_ - (self._last_input if self._last_input is not None else input_)
-        self._derivative = -self.Kd * d_input / dt
 
         # compute the proportional term
         if not self.proportional_on_measurement:
@@ -96,14 +94,17 @@ class PID(object):
             self._proportional = self.Kp * error
         else:
             # add the proportional error on measurement to error_sum
-            self._error_sum -= self.Kp * d_input
-            self._proportional = 0
+            self._proportional -= self.Kp * d_input
+            self._proportional = _clamp(self._proportional, self.output_limits)
 
-        # clamp error sum to avoid integral windup (and proportional, if proportional-on-measurement is used)
-        self._error_sum = _clamp(self._error_sum, self.output_limits)
+        # compute integral and derivative terms
+        self._integral += self.Ki * error * dt
+        self._integral = _clamp(self._integral, self.output_limits)  # avoid integral windup
+
+        self._derivative = -self.Kd * d_input / dt
 
         # compute final output
-        output = self._proportional + self._error_sum + self._derivative
+        output = self._proportional + self._integral + self._derivative
         output = _clamp(output, self.output_limits)
 
         # keep track of state
@@ -118,9 +119,8 @@ class PID(object):
         """
         The P-, I- and D-terms from the last computation as separate components as a tuple. Useful for visualizing
         what the controller is doing or when tuning hard-to-tune systems.
-        Note: when using *proportional_on_measurement*, the proportional error will be baked into the I-term.
         """
-        return self._proportional, self._error_sum, self._derivative
+        return self._proportional, self._integral, self._derivative
 
     @property
     def tunings(self):
@@ -145,7 +145,8 @@ class PID(object):
             self._last_output = None
             self._last_input = None
             self._last_time = _current_time()
-            self._error_sum = _clamp(0, self.output_limits)
+            self._proportional = 0
+            self._integral = _clamp(0, self.output_limits)
 
         self._auto_mode = enabled
 
@@ -164,8 +165,9 @@ class PID(object):
             self._last_output = last_output
             self._last_input = None
             self._last_time = _current_time()
-            self._error_sum = (last_output if last_output is not None else 0)
-            self._error_sum = _clamp(self._error_sum, self.output_limits)
+            self._proportional = 0
+            self._integral = (last_output if last_output is not None else 0)
+            self._integral = _clamp(self._integral, self.output_limits)
 
         self._auto_mode = enabled
 
@@ -192,5 +194,5 @@ class PID(object):
         self._min_output = min_output
         self._max_output = max_output
 
-        self._error_sum = _clamp(self._error_sum, self.output_limits)
+        self._integral = _clamp(self._integral, self.output_limits)
         self._last_output = _clamp(self._last_output, self.output_limits)
