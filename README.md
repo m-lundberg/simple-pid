@@ -38,6 +38,7 @@ The `PID` class implements `__call__()`, which means that to compute a new outpu
 output = pid(current_value)
 ```
 
+### The basics
 The PID works best when it is updated at regular intervals. To achieve this, set `sample_time` to the amount of time there should be between each update and then call the PID every time in the program loop. A new output will only be calculated when `sample_time` seconds has passed:
 ```python
 pid.sample_time = 0.01  # update every 0.01 seconds
@@ -57,6 +58,14 @@ pid.Ki = 1.0
 pid.tunings = (1.0, 0.2, 0.4)
 ```
 
+In order to get output values in a certain range, and also to avoid [integral windup](https://en.wikipedia.org/wiki/Integral_windup) (since the integral term will never be allowed to grow outside of these limits), the output can be limited to a range:
+```python
+pid.output_limits = (0, 10)    # output value will be between 0 and 10
+pid.output_limits = (0, None)  # output will always be above 0, but with no upper bound
+```
+
+### Other features
+#### Auto mode
 To disable the PID so that no new values are computed, set auto mode to False:
 ```python
 pid.auto_mode = False  # no new values will be computed when pid is called
@@ -68,17 +77,13 @@ pid.set_auto_mode(True, last_output=8.0)
 ```
 This will set the I-term to the value given to `last_output`, meaning that if the system that is being controlled was stable at that output value the PID will keep the system stable if started from that point, without any big bumps in the output when turning the PID back on.
 
-In order to get output values in a certain range, and also to avoid [integral windup](https://en.wikipedia.org/wiki/Integral_windup) (since the integral term will never be allowed to grow outside of these limits), the output can be limited to a range:
-```python
-pid.output_limits = (0, 10)    # output value will be between 0 and 10
-pid.output_limits = (0, None)  # output will always be above 0, but with no upper bound
-```
-
+#### Observing separate components
 When tuning the PID, it can be useful to see how each of the components contribute to the output. They can be seen like this:
 ```python
 p, i, d = pid.components  # the separate terms are now in p, i, d
 ```
 
+#### Proportional on measurement
 To eliminate overshoot in certain types of systems, you can calculate the [proportional term directly on the measurement](http://brettbeauregard.com/blog/2017/06/introducing-proportional-on-measurement/) instead of the error. This can be enabled like this:
 ```python
 pid.proportional_on_measurement = True
