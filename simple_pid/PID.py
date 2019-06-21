@@ -63,17 +63,22 @@ class PID(object):
 
         self.reset()
 
-    def __call__(self, input_):
+    def __call__(self, input_, dt=None):
         """
         Call the PID controller with *input_* and calculate and return a control output if sample_time seconds has
         passed since the last update. If no new output is calculated, return the previous output instead (or None if
         no value has been calculated yet).
+        :param dt: If set, uses this value for timestep instead of real time. This can be used in simulations when
+                   simulation time is different from real time.
         """
         if not self.auto_mode:
             return self._last_output
 
         now = _current_time()
-        dt = now - self._last_time if now - self._last_time else 1e-16
+        if dt is None:
+            dt = now - self._last_time if now - self._last_time else 1e-16
+        elif dt <= 0:
+            raise ValueError("dt has nonpositive value {}. Must be positive.".format(dt))
 
         if self.sample_time is not None and dt < self.sample_time and self._last_output is not None:
             # only update every sample_time seconds
