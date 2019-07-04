@@ -139,15 +139,7 @@ class PID(object):
     @auto_mode.setter
     def auto_mode(self, enabled):
         """Enable or disable the PID controller"""
-        if enabled and not self._auto_mode:
-            # switching from manual mode to auto, reset
-            self._last_output = None
-            self._last_input = None
-            self._last_time = _current_time()
-            self._proportional = 0
-            self._integral = _clamp(0, self.output_limits)
-
-        self._auto_mode = enabled
+        self.set_auto_mode(enabled)
 
     def set_auto_mode(self, enabled, last_output=None):
         """
