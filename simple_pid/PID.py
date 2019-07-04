@@ -95,7 +95,6 @@ class PID(object):
         else:
             # add the proportional error on measurement to error_sum
             self._proportional -= self.Kp * d_input
-            self._proportional = _clamp(self._proportional, self.output_limits)
 
         # compute integral and derivative terms
         self._integral += self.Ki * error * dt
