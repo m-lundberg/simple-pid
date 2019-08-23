@@ -26,6 +26,7 @@ class PID(object):
     """
     A simple PID controller. No fuss.
     """
+
     def __init__(self,
                  Kp=1.0, Ki=0.0, Kd=0.0,
                  setpoint=0,
@@ -60,13 +61,7 @@ class PID(object):
         self._auto_mode = auto_mode
         self.proportional_on_measurement = proportional_on_measurement
 
-        self._proportional = 0
-        self._integral = 0
-        self._derivative = 0
-
-        self._last_time = _current_time()
-        self._last_output = None
-        self._last_input = None
+        self.reset()
 
     def __call__(self, input_):
         """
@@ -140,6 +135,19 @@ class PID(object):
     def auto_mode(self, enabled):
         """Enable or disable the PID controller"""
         self.set_auto_mode(enabled)
+
+    def reset(self):
+        """
+        Reset the PID controller internals, setting each term à 0 as well as  cleaning the integral,
+        the last output and the last input (derivative calculation).
+        """
+        self._proportional = 0
+        self._integral = 0
+        self._derivative = 0
+
+        self._last_time = _current_time()
+        self._last_output = None
+        self._last_input = None
 
     def set_auto_mode(self, enabled, last_output=None):
         """
