@@ -136,19 +136,6 @@ class PID(object):
         """Enable or disable the PID controller"""
         self.set_auto_mode(enabled)
 
-    def reset(self):
-        """
-        Reset the PID controller internals, setting each term à 0 as well as  cleaning the integral,
-        the last output and the last input (derivative calculation).
-        """
-        self._proportional = 0
-        self._integral = 0
-        self._derivative = 0
-
-        self._last_time = _current_time()
-        self._last_output = None
-        self._last_input = None
-
     def set_auto_mode(self, enabled, last_output=None):
         """
         Enable or disable the PID controller, optionally setting the last output value.
@@ -161,10 +148,8 @@ class PID(object):
         """
         if enabled and not self._auto_mode:
             # switching from manual mode to auto, reset
-            self._last_output = last_output
-            self._last_input = None
-            self._last_time = _current_time()
-            self._proportional = 0
+            self.reset()
+
             self._integral = (last_output if last_output is not None else 0)
             self._integral = _clamp(self._integral, self.output_limits)
 
@@ -195,3 +180,16 @@ class PID(object):
 
         self._integral = _clamp(self._integral, self.output_limits)
         self._last_output = _clamp(self._last_output, self.output_limits)
+
+    def reset(self):
+        """
+        Reset the PID controller internals, setting each term to 0 as well as cleaning the integral,
+        the last output and the last input (derivative calculation).
+        """
+        self._proportional = 0
+        self._integral = 0
+        self._derivative = 0
+
+        self._last_time = _current_time()
+        self._last_output = None
+        self._last_input = None
