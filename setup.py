@@ -12,7 +12,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='simple-pid',
-    version='0.2.3',
+    version='0.2.4',
     description='A simple, easy to use PID controller',
     long_description=long_description,
     long_description_content_type='text/markdown',
