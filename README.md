@@ -58,10 +58,10 @@ pid.Ki = 1.0
 pid.tunings = (1.0, 0.2, 0.4)
 ```
 
-To use the PID in [reverse mode](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-direction/), meaning that an increase in the input leads to a decrease in the output (like when cooling for example), you can set the tuning to negative values:
+To use the PID in [reverse mode](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-direction/), meaning that an increase in the input leads to a decrease in the output (like when cooling for example), you can set the tunings to negative values:
 
 ```python
-pid.tunings = (-1.0, -0.1 0)
+pid.tunings = (-1.0, -0.1, 0)
 ```
 
 Note that all the tunings should have the same sign.
