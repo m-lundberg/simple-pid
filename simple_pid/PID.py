@@ -23,35 +23,40 @@ except AttributeError:
 
 
 class PID(object):
-    """
-    A simple PID controller. No fuss.
-    """
+    """A simple PID controller."""
 
-    def __init__(self,
-                 Kp=1.0, Ki=0.0, Kd=0.0,
-                 setpoint=0,
-                 sample_time=0.01,
-                 output_limits=(None, None),
-                 auto_mode=True,
-                 proportional_on_measurement=False):
+    def __init__(
+        self,
+        Kp=1.0,
+        Ki=0.0,
+        Kd=0.0,
+        setpoint=0,
+        sample_time=0.01,
+        output_limits=(None, None),
+        auto_mode=True,
+        proportional_on_measurement=False,
+    ):
         """
+        Initialize a new PID controller.
+
         :param Kp: The value for the proportional gain Kp
         :param Ki: The value for the integral gain Ki
         :param Kd: The value for the derivative gain Kd
         :param setpoint: The initial setpoint that the PID will try to achieve
-        :param sample_time: The time in seconds which the controller should wait before generating a new output value.
-                            The PID works best when it is constantly called (eg. during a loop), but with a sample
-                            time set so that the time difference between each update is (close to) constant. If set to
-                            None, the PID will compute a new output value every time it is called.
-        :param output_limits: The initial output limits to use, given as an iterable with 2 elements, for example:
-                              (lower, upper). The output will never go below the lower limit or above the upper limit.
-                              Either of the limits can also be set to None to have no limit in that direction. Setting
-                              output limits also avoids integral windup, since the integral term will never be allowed
-                              to grow outside of the limits.
-        :param auto_mode: Whether the controller should be enabled (in auto mode) or not (in manual mode)
-        :param proportional_on_measurement: Whether the proportional term should be calculated on the input directly
-                                            rather than on the error (which is the traditional way). Using
-                                            proportional-on-measurement avoids overshoot for some types of systems.
+        :param sample_time: The time in seconds which the controller should wait before generating
+            a new output value. The PID works best when it is constantly called (eg. during a
+            loop), but with a sample time set so that the time difference between each update is
+            (close to) constant. If set to None, the PID will compute a new output value every time
+            it is called.
+        :param output_limits: The initial output limits to use, given as an iterable with 2
+            elements, for example: (lower, upper). The output will never go below the lower limit
+            or above the upper limit. Either of the limits can also be set to None to have no limit
+            in that direction. Setting output limits also avoids integral windup, since the
+            integral term will never be allowed to grow outside of the limits.
+        :param auto_mode: Whether the controller should be enabled (auto mode) or not (manual mode)
+        :param proportional_on_measurement: Whether the proportional term should be calculated on
+            the input directly rather than on the error (which is the traditional way). Using
+            proportional-on-measurement avoids overshoot for some types of systems.
         """
         self.Kp, self.Ki, self.Kd = Kp, Ki, Kd
         self.setpoint = setpoint
@@ -65,11 +70,14 @@ class PID(object):
 
     def __call__(self, input_, dt=None):
         """
-        Call the PID controller with *input_* and calculate and return a control output if sample_time seconds has
-        passed since the last update. If no new output is calculated, return the previous output instead (or None if
-        no value has been calculated yet).
-        :param dt: If set, uses this value for timestep instead of real time. This can be used in simulations when
-                   simulation time is different from real time.
+        Update the PID controller.
+
+        Call the PID controller with *input_* and calculate and return a control output if
+        sample_time seconds has passed since the last update. If no new output is calculated,
+        return the previous output instead (or None if no value has been calculated yet).
+
+        :param dt: If set, uses this value for timestep instead of real time. This can be used in
+            simulations when simulation time is different from real time.
         """
         if not self.auto_mode:
             return self._last_output
@@ -116,46 +124,48 @@ class PID(object):
     @property
     def components(self):
         """
-        The P-, I- and D-terms from the last computation as separate components as a tuple. Useful for visualizing
-        what the controller is doing or when tuning hard-to-tune systems.
+        The P-, I- and D-terms from the last computation as separate components as a tuple. Useful
+        for visualizing what the controller is doing or when tuning hard-to-tune systems.
         """
         return self._proportional, self._integral, self._derivative
 
     @property
     def tunings(self):
-        """The tunings used by the controller as a tuple: (Kp, Ki, Kd)"""
+        """The tunings used by the controller as a tuple: (Kp, Ki, Kd)."""
         return self.Kp, self.Ki, self.Kd
 
     @tunings.setter
     def tunings(self, tunings):
-        """Setter for the PID tunings"""
+        """Set the PID tunings."""
         self.Kp, self.Ki, self.Kd = tunings
 
     @property
     def auto_mode(self):
-        """Whether the controller is currently enabled (in auto mode) or not"""
+        """Whether the controller is currently enabled (in auto mode) or not."""
         return self._auto_mode
 
     @auto_mode.setter
     def auto_mode(self, enabled):
-        """Enable or disable the PID controller"""
+        """Enable or disable the PID controller."""
         self.set_auto_mode(enabled)
 
     def set_auto_mode(self, enabled, last_output=None):
         """
         Enable or disable the PID controller, optionally setting the last output value.
+
         This is useful if some system has been manually controlled and if the PID should take over.
-        In that case, pass the last output variable (the control variable) and it will be set as the starting
-        I-term when the PID is set to auto mode.
+        In that case, pass the last output variable (the control variable) and it will be set as
+        the starting I-term when the PID is set to auto mode.
+
         :param enabled: Whether auto mode should be enabled, True or False
-        :param last_output: The last output, or the control variable, that the PID should start from
-                            when going from manual mode to auto mode
+        :param last_output: The last output, or the control variable, that the PID should start
+            from when going from manual mode to auto mode
         """
         if enabled and not self._auto_mode:
             # switching from manual mode to auto, reset
             self.reset()
 
-            self._integral = (last_output if last_output is not None else 0)
+            self._integral = last_output if last_output is not None else 0
             self._integral = _clamp(self._integral, self.output_limits)
 
         self._auto_mode = enabled
@@ -163,14 +173,15 @@ class PID(object):
     @property
     def output_limits(self):
         """
-        The current output limits as a 2-tuple: (lower, upper). See also the *output_limts* parameter in
-        :meth:`PID.__init__`.
+        The current output limits as a 2-tuple: (lower, upper).
+
+        See also the *output_limts* parameter in :meth:`PID.__init__`.
         """
         return self._min_output, self._max_output
 
     @output_limits.setter
     def output_limits(self, limits):
-        """Setter for the output limits"""
+        """Set the output limits."""
         if limits is None:
             self._min_output, self._max_output = None, None
             return
@@ -188,8 +199,10 @@ class PID(object):
 
     def reset(self):
         """
-        Reset the PID controller internals, setting each term to 0 as well as cleaning the integral,
-        the last output and the last input (derivative calculation).
+        Reset the PID controller internals.
+
+        This sets each term to 0 as well as clearing the integral, the last output and the last
+        input (derivative calculation).
         """
         self._proportional = 0
         self._integral = 0
