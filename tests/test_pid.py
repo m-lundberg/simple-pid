@@ -135,6 +135,7 @@ def test_auto_mode():
 
     # last update time should be reset to avoid huge dt
     from simple_pid.PID import _current_time
+
     pid.auto_mode = False
     time.sleep(1)
     pid.auto_mode = True
@@ -192,14 +193,14 @@ def test_converge_system():
 
     def update_system(C, dt):
         # calculate a simple system model
-        return PV + C*dt - 1*dt
+        return PV + C * dt - 1 * dt
 
     start_time = time.time()
     last_time = start_time
 
     while time.time() - start_time < 120:
         C = pid(PV)
-        PV = update_system(C, time.time()-last_time)
+        PV = update_system(C, time.time() - last_time)
 
         last_time = time.time()
 
