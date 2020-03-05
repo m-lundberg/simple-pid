@@ -27,6 +27,11 @@ setup(
     ],
     keywords='pid controller control',
     packages=['simple_pid'],
+    package_data={
+        'simple_pid': ['*.pyi', 'py.typed'],
+    },
+    include_package_data=True,
+    zip_safe=False,
     extras_require={
         'docs': ['m2r', 'sphinx-rtd-theme']
     },

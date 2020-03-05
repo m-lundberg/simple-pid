@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Typing information through a stub file so that users of the library can use e.g.
+  [mypy](https://github.com/python/mypy) to type check their code
+
 - This project now uses the [Black code style](https://github.com/psf/black)
 
 ### Fixed
@@ -43,7 +46,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Allow the proportional term to be monitored properly through the components-property when _proportional on measurement_ is enabled.
+- Allow the proportional term to be monitored properly through the components-property when
+  _proportional on measurement_ is enabled.
 
 ### Fixed
 
@@ -63,7 +67,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Use monotonic time to prevent errors that may be difficult to diagnose when the system time is modified. Thanks [@deniz195](https://github.com/m-lundberg/simple-pid/issues/1)
+- Use monotonic time to prevent errors that may be difficult to diagnose when the system time is
+  modified. Thanks [@deniz195](https://github.com/m-lundberg/simple-pid/issues/1)
 
 ### Added
 
