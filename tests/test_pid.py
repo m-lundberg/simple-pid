@@ -187,6 +187,16 @@ def test_clamp():
     assert _clamp(100, (-10, 10)) == 10
 
 
+def test_repr():
+    pid = PID(1, 2, 3, setpoint=10)
+    new_pid = eval(repr(pid))
+
+    assert new_pid.Kp == 1
+    assert new_pid.Ki == 2
+    assert new_pid.Kd == 3
+    assert new_pid.setpoint == 10
+
+
 def test_converge_system():
     pid = PID(1, 0.8, 0.04, setpoint=5, output_limits=(-5, 5))
     PV = 0  # process variable

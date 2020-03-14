@@ -122,12 +122,14 @@ class PID(object):
         return output
 
     def __repr__(self):
-        return ('{self.__class__.__name__}('
-                'Kp={self.Kp!r}, Ki={self.Ki!r}, Kd={self.Kd!r}, '
-                'setpoint={self.setpoint!r}, sample_time={self.sample_time!r}, '
-                'output_limits={self.output_limits!r}, auto_mode={self.auto_mode!r}, '
-                'proportional_on_measurement={self.proportional_on_measurement!r}'
-                ')').format(self=self)
+        return (
+            '{self.__class__.__name__}('
+            'Kp={self.Kp!r}, Ki={self.Ki!r}, Kd={self.Kd!r}, '
+            'setpoint={self.setpoint!r}, sample_time={self.sample_time!r}, '
+            'output_limits={self.output_limits!r}, auto_mode={self.auto_mode!r}, '
+            'proportional_on_measurement={self.proportional_on_measurement!r}'
+            ')'
+        ).format(self=self)
 
     @property
     def components(self):
