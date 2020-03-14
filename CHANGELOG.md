@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - This project now uses the [Black code style](https://github.com/psf/black)
 
+- The PID class now has a \_\_repr\_\_() method, meaning that objects of this type can be printed
+  directly for use during development
+
 ### Fixed
 
 - Formatting errors in the documentation due to poorly formatted docstrings
