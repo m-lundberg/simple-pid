@@ -86,7 +86,7 @@ class PID(object):
         if dt is None:
             dt = now - self._last_time if now - self._last_time else 1e-16
         elif dt <= 0:
-            raise ValueError("dt has nonpositive value {}. Must be positive.".format(dt))
+            raise ValueError('dt has nonpositive value {}. Must be positive.'.format(dt))
 
         if self.sample_time is not None and dt < self.sample_time and self._last_output is not None:
             # only update every sample_time seconds
