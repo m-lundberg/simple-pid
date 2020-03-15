@@ -33,6 +33,7 @@ class PID(object):
         setpoint=0,
         sample_time=0.01,
         output_limits=(None, None),
+        windup_limits=(None, None),
         auto_mode=True,
         proportional_on_measurement=False,
     ):
@@ -51,8 +52,11 @@ class PID(object):
         :param output_limits: The initial output limits to use, given as an iterable with 2
             elements, for example: (lower, upper). The output will never go below the lower limit
             or above the upper limit. Either of the limits can also be set to None to have no limit
-            in that direction. Setting output limits also avoids integral windup, since the
-            integral term will never be allowed to grow outside of the limits.
+            in that direction.
+        :param windup_limits: The initial windup limits to use, given as an iterable with 2
+            elements, for example: (lower, upper). The windup will never go below the lower limit
+            or above the upper limit. Either of the limits can also be set to None to have no limit
+            in that direction.
         :param auto_mode: Whether the controller should be enabled (auto mode) or not (manual mode)
         :param proportional_on_measurement: Whether the proportional term should be calculated on
             the input directly rather than on the error (which is the traditional way). Using
@@ -106,7 +110,7 @@ class PID(object):
 
         # compute integral and derivative terms
         self._integral += self.Ki * error * dt
-        self._integral = _clamp(self._integral, self.output_limits)  # avoid integral windup
+        self._integral = _clamp(self._integral, self.windup_limits)  # avoid integral windup
 
         self._derivative = -self.Kd * d_input / dt
 
