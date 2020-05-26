@@ -35,7 +35,7 @@ class PID(object):
         output_limits=(None, None),
         auto_mode=True,
         proportional_on_measurement=False,
-        error_map=None,
+        error_map=None
     ):
         """
         Initialize a new PID controller.
@@ -214,26 +214,6 @@ class PID(object):
 
         self._integral = _clamp(self._integral, self.output_limits)
         self._last_output = _clamp(self._last_output, self.output_limits)
-
-    @property
-    def error_map(self):
-        """
-        The current function to map the error in another set of values.
-        Useful for use to control yaw angle of a quadcopter for values [-pi, pi[
-        or in general to clip the error value.
-        """
-        return self.error_map
-
-    @error_map.setter
-    def error_map(self, function):
-        """
-        Set the function to map the error value in another set of values.
-        """
-        if function is None:
-            self.error_map = None
-            return
-
-        self.error_map = function
 
     def reset(self):
         """
