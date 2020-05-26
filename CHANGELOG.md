@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Function to map the erro value, now is possibly to clip the error value, i.e., [-pi, pi[
+
 - Typing information through a stub file so that users of the library can use e.g.
   [mypy](https://github.com/python/mypy) to type check their code
 
@@ -19,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Correcting the calculation of the integral value: misplaced use of Ki gain.
 - Formatting errors in the documentation due to poorly formatted docstrings
 
 ## [0.2.4] - 2019-10-08

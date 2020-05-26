@@ -35,6 +35,7 @@ class PID(object):
         output_limits=(None, None),
         auto_mode=True,
         proportional_on_measurement=False,
+        error_map=None,
     ):
         """
         Initialize a new PID controller.
@@ -57,6 +58,7 @@ class PID(object):
         :param proportional_on_measurement: Whether the proportional term should be calculated on
             the input directly rather than on the error (which is the traditional way). Using
             proportional-on-measurement avoids overshoot for some types of systems.
+        :param error_map: Function to map the error in another set of values.
         """
         self.Kp, self.Ki, self.Kd = Kp, Ki, Kd
         self.setpoint = setpoint
@@ -65,6 +67,7 @@ class PID(object):
         self._min_output, self._max_output = output_limits
         self._auto_mode = auto_mode
         self.proportional_on_measurement = proportional_on_measurement
+        self.error_map = error_map
 
         self.reset()
 
@@ -95,6 +98,10 @@ class PID(object):
         # compute error terms
         error = self.setpoint - input_
         d_input = input_ - (self._last_input if self._last_input is not None else input_)
+
+        # check if must map the error
+        if self.error_map is not None:
+            error = self.error_map(error)
 
         # compute the proportional term
         if not self.proportional_on_measurement:
@@ -128,6 +135,7 @@ class PID(object):
             'setpoint={self.setpoint!r}, sample_time={self.sample_time!r}, '
             'output_limits={self.output_limits!r}, auto_mode={self.auto_mode!r}, '
             'proportional_on_measurement={self.proportional_on_measurement!r}'
+            'error_map={self.error_map!r}'
             ')'
         ).format(self=self)
 
@@ -206,6 +214,26 @@ class PID(object):
 
         self._integral = _clamp(self._integral, self.output_limits)
         self._last_output = _clamp(self._last_output, self.output_limits)
+
+    @property
+    def error_map(self):
+        """
+        The current function to map the error in another set of values.
+        Useful for use to control yaw angle of a quadcopter for values [-pi, pi[
+        or in general to clip the error value.
+        """
+        return self.error_map
+
+    @error_map.setter
+    def error_map(self, function):
+        """
+        Set the function to map the error value in another set of values.
+        """
+        if function is None:
+            self.error_map = None
+            return
+
+        self.error_map = function
 
     def reset(self):
         """
