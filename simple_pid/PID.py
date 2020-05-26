@@ -105,13 +105,13 @@ class PID(object):
             self._proportional -= self.Kp * d_input
 
         # compute integral and derivative terms
-        self._integral += self.Ki * error * dt
+        self._integral += error * dt
         self._integral = _clamp(self._integral, self.output_limits)  # avoid integral windup
 
-        self._derivative = -self.Kd * d_input / dt
+        self._derivative = d_input / dt
 
         # compute final output
-        output = self._proportional + self._integral + self._derivative
+        output = self._proportional + self.Ki * self._integral - self.Kd * self._derivative
         output = _clamp(output, self.output_limits)
 
         # keep track of state
