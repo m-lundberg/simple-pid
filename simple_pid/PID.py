@@ -185,7 +185,7 @@ class PID(object):
         """
         The current output limits as a 2-tuple: (lower, upper).
 
-        See also the *output_limts* parameter in :meth:`PID.__init__`.
+        See also the *output_limits* parameter in :meth:`PID.__init__`.
         """
         return self._min_output, self._max_output
 
