@@ -12,3 +12,4 @@ build/
 .envrc
 build.sh
 total_downloads.py
+.vscode/

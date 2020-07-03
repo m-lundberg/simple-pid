@@ -47,9 +47,9 @@ if __name__ == '__main__':
     water_temp = boiler.water_temp
 
     pid = PID(5, 0.01, 0.1, setpoint=water_temp)
-    # pid = PID(20, 0.9, 1.9, setpoint=water_temp)
+    pid.sample_time = 0.1
     pid.output_limits = (0, 100)
-
+    
     start_time = time.time()
     last_time = start_time
 
@@ -71,10 +71,8 @@ if __name__ == '__main__':
             pid.setpoint = 100
 
         last_time = current_time
-        time.sleep(0.1)
-        # time.sleep(0.01)
+        time.sleep(pid.sample_time)
 
-    # print(f"{list(zip(x, y))}")
     print(y)
     plt.plot(x, y, label='measured')
     plt.plot(x, setpoint, label='target')
