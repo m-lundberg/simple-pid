@@ -47,7 +47,6 @@ if __name__ == '__main__':
     water_temp = boiler.water_temp
 
     pid = PID(5, 0.01, 0.1, setpoint=water_temp)
-    # pid = PID(20, 0.9, 1.9, setpoint=water_temp)
     pid.output_limits = (0, 100)
 
     start_time = time.time()
