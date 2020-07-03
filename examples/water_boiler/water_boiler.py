@@ -73,8 +73,6 @@ if __name__ == '__main__':
         last_time = current_time
         time.sleep(0.1)
 
-    # print(f"{list(zip(x, y))}")
-    print(y)
     plt.plot(x, y, label='measured')
     plt.plot(x, setpoint, label='target')
     plt.xlabel('time')
