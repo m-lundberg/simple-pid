@@ -72,7 +72,6 @@ if __name__ == '__main__':
 
         last_time = current_time
         time.sleep(0.1)
-        # time.sleep(0.01)
 
     # print(f"{list(zip(x, y))}")
     print(y)
