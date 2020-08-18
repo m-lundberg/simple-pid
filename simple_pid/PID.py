@@ -216,7 +216,6 @@ class PID(object):
             self._min_output, self._max_output = None, None
             return
 
-
         min_output, max_output = limits
 
         if None not in limits and max_output < min_output:
