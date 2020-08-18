@@ -1,5 +1,6 @@
 import sys
 import time
+import math
 from simple_pid import PID
 
 
@@ -216,3 +217,15 @@ def test_converge_system():
 
     # check if system has converged
     assert abs(PV - 5) < 0.1
+    
+def test_error_map():
+    from simple_pid.PID import pi_clip
+    
+    sp = 0. # setpoint
+    pid = PID(1, 0, 0, setpoint=sp, sample_time=0.1)
+    PV = 5.  # process variable
+    
+    # check if error value is mapped by the function
+    pid.error_map = pi_clip
+    assert pid(PV) == pi_clip(sp - PV) # clip the error
+    

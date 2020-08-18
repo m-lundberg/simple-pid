@@ -21,7 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Correcting the calculation of the integral value: misplaced use of Ki gain.
 - Formatting errors in the documentation due to poorly formatted docstrings
 
 ## [0.2.4] - 2019-10-08

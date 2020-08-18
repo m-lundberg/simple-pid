@@ -21,7 +21,7 @@ v = controlled_system.update(0)
 while True:
     # compute new ouput from the PID according to the systems current value
     control = pid(v)
-
+    
     # feed the PID output to the system and get its current value
     v = controlled_system.update(control)
 ```
@@ -99,16 +99,17 @@ To eliminate overshoot in certain types of systems, you can calculate the [propo
 pid.proportional_on_measurement = True
 ```
 
+
 #### Error mapping
-To transforme the error value in another set of value, e.g., for clipping the value. Implemented initially for yaw angle control [-pi, pi[
+To transform the error value in another value, e.g., to get a degree value error in a yaw angle control with values between [-pi, pi)
 ```python
 def pi_clip(angle):
     if angle > 0:
         if angle > np.pi:
-            return angle -2*np.pi
+            return angle -2*math.pi
     else:
         if angle < -np.pi:
-            return angle +2*np.pi
+            return angle +2*math.pi
     return angle
 
 pid.error_map = pi_clip
