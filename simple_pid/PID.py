@@ -13,15 +13,17 @@ def _clamp(value, limits):
         return lower
     return value
 
+
 def pi_clip(angle):
     """Transform the angle value to a [-pi, pi) range."""
     if angle > 0:
         if angle > math.pi:
-            return angle -2*math.pi
+            return angle - 2 * math.pi
     else:
         if angle < -math.pi:
-            return angle +2*math.pi
-    return angle 
+            return angle + 2 * math.pi
+    return angle
+
 
 try:
     # get monotonic time to ensure that time deltas are always positive
@@ -108,7 +110,7 @@ class PID(object):
         # compute error terms
         error = self.setpoint - input_
         d_input = input_ - (self._last_input if self._last_input is not None else input_)
-        
+
         # check if must map the error
         if self.error_map is not None:
             error = self.error_map(error)
@@ -213,6 +215,7 @@ class PID(object):
         if limits is None:
             self._min_output, self._max_output = None, None
             return
+
 
         min_output, max_output = limits
 
