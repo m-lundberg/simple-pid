@@ -1,6 +1,5 @@
 import sys
 import time
-import math
 from simple_pid import PID
 
 
