@@ -35,6 +35,7 @@ class PID(object):
         output_limits=(None, None),
         auto_mode=True,
         proportional_on_measurement=False,
+        reset_integral_term_to=None,
     ):
         """
         Initialize a new PID controller.
@@ -65,6 +66,7 @@ class PID(object):
         self._min_output, self._max_output = output_limits
         self._auto_mode = auto_mode
         self.proportional_on_measurement = proportional_on_measurement
+        self.reset_integral_term_to = reset_integral_term_to
 
         self.reset()
 
@@ -107,6 +109,9 @@ class PID(object):
         # compute integral and derivative terms
         self._integral += self.Ki * error * dt
         self._integral = _clamp(self._integral, self.output_limits)  # avoid integral windup
+        # if reset integral to specific term is on
+        if self.reset_integral_term_to is not None:
+            self._integral = self.reset_integral_term_to
 
         self._derivative = -self.Kd * d_input / dt
 
