@@ -43,6 +43,24 @@ def test_I_negative_setpoint():
     assert round(pid(0)) == -20.0
 
 
+def test_reset_I_term():
+    pid = PID(0, 10, 0, setpoint=-10, sample_time=0.1)
+    time.sleep(0.1)
+
+    assert round(pid(0)) == -10.0
+    time.sleep(0.1)
+
+    assert round(pid(0)) == -20.0
+    time.sleep(0.1)
+
+    pid.reset_integral_term_to = 0
+    assert round(pid(0)) == 0
+    time.sleep(0.1)
+
+    pid.rest_integral_term_to = None
+    assert round(pid(0)) == -10.0
+
+
 def test_D():
     pid = PID(0, 0, 0.1, setpoint=10, sample_time=0.1)
 
