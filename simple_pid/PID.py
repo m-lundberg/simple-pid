@@ -62,10 +62,19 @@ class PID(object):
         self.setpoint = setpoint
         self.sample_time = sample_time
 
-        self._min_output, self._max_output = output_limits
+        self._min_output, self._max_output = None, None
         self._auto_mode = auto_mode
         self.proportional_on_measurement = proportional_on_measurement
 
+        self._proportional = 0
+        self._integral = 0
+        self._derivative = 0
+
+        self._last_time = None
+        self._last_output = None
+        self._last_input = None
+
+        self.output_limits = output_limits
         self.reset()
 
     def __call__(self, input_, dt=None):
@@ -86,7 +95,7 @@ class PID(object):
         if dt is None:
             dt = now - self._last_time if now - self._last_time else 1e-16
         elif dt <= 0:
-            raise ValueError('dt has nonpositive value {}. Must be positive.'.format(dt))
+            raise ValueError('dt has negative value {}, must be positive'.format(dt))
 
         if self.sample_time is not None and dt < self.sample_time and self._last_output is not None:
             # only update every sample_time seconds
@@ -185,7 +194,7 @@ class PID(object):
         """
         The current output limits as a 2-tuple: (lower, upper).
 
-        See also the *output_limts* parameter in :meth:`PID.__init__`.
+        See also the *output_limits* parameter in :meth:`PID.__init__`.
         """
         return self._min_output, self._max_output
 
@@ -217,6 +226,8 @@ class PID(object):
         self._proportional = 0
         self._integral = 0
         self._derivative = 0
+
+        self._integral = _clamp(self._integral, self.output_limits)
 
         self._last_time = _current_time()
         self._last_output = None
