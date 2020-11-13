@@ -99,17 +99,18 @@ To eliminate overshoot in certain types of systems, you can calculate the [propo
 pid.proportional_on_measurement = True
 ```
 
-
 #### Error mapping
-To transform the error value in another value, e.g., to get a degree value error in a yaw angle control with values between [-pi, pi)
+To transform the error value to another domain before doing any computations on it, you can supply an `error_map` callback function to the PID. The callback function should take one argument which is the error from the setpoint. This can be used e.g. to get a degree value error in a yaw angle control with values between [-pi, pi):
 ```python
+import math
+
 def pi_clip(angle):
     if angle > 0:
-        if angle > np.pi:
-            return angle -2*math.pi
+        if angle > math.pi:
+            return angle - 2*math.pi
     else:
-        if angle < -np.pi:
-            return angle +2*math.pi
+        if angle < -math.pi:
+            return angle + 2*math.pi
     return angle
 
 pid.error_map = pi_clip
