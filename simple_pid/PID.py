@@ -13,18 +13,6 @@ def _clamp(value, limits):
         return lower
     return value
 
-
-def pi_clip(angle):
-    """Transform the angle value to a [-pi, pi) range."""
-    if angle > 0:
-        if angle > math.pi:
-            return angle - 2 * math.pi
-    else:
-        if angle < -math.pi:
-            return angle + 2 * math.pi
-    return angle
-
-
 try:
     # get monotonic time to ensure that time deltas are always positive
     _current_time = time.monotonic
