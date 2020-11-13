@@ -1,5 +1,4 @@
 import time
-import math
 import warnings
 
 
@@ -12,6 +11,7 @@ def _clamp(value, limits):
     elif lower is not None and value < lower:
         return lower
     return value
+
 
 try:
     # get monotonic time to ensure that time deltas are always positive

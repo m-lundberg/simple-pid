@@ -219,16 +219,17 @@ def test_converge_system():
 
 
 def test_error_map():
-   # error map function
-   def pi_clip(angle):
-      """Transform the angle value to a [-pi, pi) range."""
-      if angle > 0:
-         if angle > math.pi:
-            return angle - 2 * math.pi
-      else:
-         if angle < -math.pi:
-            return angle + 2 * math.pi
-      return angle
+    # error map function
+    import math
+    def pi_clip(angle):
+        """Transform the angle value to a [-pi, pi) range."""
+        if angle > 0:
+            if angle > math.pi:
+                return angle - 2 * math.pi
+        else:
+            if angle < -math.pi:
+                return angle + 2 * math.pi
+        return angle
 
 
     sp = 0.  # setpoint
