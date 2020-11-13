@@ -99,6 +99,22 @@ To eliminate overshoot in certain types of systems, you can calculate the [propo
 pid.proportional_on_measurement = True
 ```
 
+
+#### Error mapping
+To transform the error value in another value, e.g., to get a degree value error in a yaw angle control with values between [-pi, pi)
+```python
+def pi_clip(angle):
+    if angle > 0:
+        if angle > np.pi:
+            return angle -2*math.pi
+    else:
+        if angle < -np.pi:
+            return angle +2*math.pi
+    return angle
+
+pid.error_map = pi_clip
+```
+
 ## Tests
 Use the following to run tests:
 ```
