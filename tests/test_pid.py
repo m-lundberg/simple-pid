@@ -221,6 +221,7 @@ def test_converge_system():
 def test_error_map():
     # error map function
     import math
+    
     def pi_clip(angle):
         """Transform the angle value to a [-pi, pi) range."""
         if angle > 0:
@@ -231,10 +232,8 @@ def test_error_map():
                 return angle + 2 * math.pi
         return angle
 
-
     sp = 0.  # setpoint
-    pid = PID(1, 0, 0, setpoint=sp, sample_time=0.1,
-       error_map=pi_clip) # include error mapping
+    pid = PID(1, 0, 0, setpoint=sp, sample_time=0.1, error_map=pi_clip) # include error mapping
     PV = 5.  # process variable
 
     # check if error value is mapped by the function
