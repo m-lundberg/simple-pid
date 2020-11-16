@@ -181,12 +181,14 @@ class PID(object):
         Enable or disable the PID controller, optionally setting the last output value.
 
         This is useful if some system has been manually controlled and if the PID should take over.
-        In that case, pass the last output variable (the control variable) and it will be set as
-        the starting I-term when the PID is set to auto mode.
+        In that case, disable the PID by setting auto mode to False and later when the PID should
+        be turned back on, pass the last output variable (the control variable) and it will be set
+        as the starting I-term when the PID is set to auto mode.
 
         :param enabled: Whether auto mode should be enabled, True or False
         :param last_output: The last output, or the control variable, that the PID should start
-            from when going from manual mode to auto mode
+            from when going from manual mode to auto mode. Has no effect if the PID is already in
+            auto mode.
         """
         if enabled and not self._auto_mode:
             # switching from manual mode to auto, reset
