@@ -6,9 +6,9 @@ def _clamp(value, limits):
     lower, upper = limits
     if value is None:
         return None
-    elif upper is not None and value > upper:
+    elif (upper is not None) and (value > upper):
         return upper
-    elif lower is not None and value < lower:
+    elif (lower is not None) and (value < lower):
         return lower
     return value
 
@@ -194,7 +194,7 @@ class PID(object):
             # switching from manual mode to auto, reset
             self.reset()
 
-            self._integral = last_output if last_output is not None else 0
+            self._integral = last_output if (last_output is not None) else 0
             self._integral = _clamp(self._integral, self.output_limits)
 
         self._auto_mode = enabled
