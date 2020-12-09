@@ -33,6 +33,7 @@ class PID(object):
         setpoint=0,
         sample_time=0.01,
         output_limits=(None, None),
+        integral_limits=(None, None),
         auto_mode=True,
         proportional_on_measurement=False,
         error_map=None
@@ -54,6 +55,9 @@ class PID(object):
             or above the upper limit. Either of the limits can also be set to None to have no limit
             in that direction. Setting output limits also avoids integral windup, since the
             integral term will never be allowed to grow outside of the limits.
+        :param integral_limits: Optional limits to place on the integral term to avoid 
+            integral windup, given as an iterable with 2 elements, in the same fashion as 
+            ``output_limits``. The integral term will not be allowed to grow outside of these bounds.
         :param auto_mode: Whether the controller should be enabled (auto mode) or not (manual mode)
         :param proportional_on_measurement: Whether the proportional term should be calculated on
             the input directly rather than on the error (which is the traditional way). Using
@@ -78,6 +82,7 @@ class PID(object):
         self._last_input = None
 
         self.output_limits = output_limits
+        self.integral_limits = integral_limits
         self.reset()
 
     def __call__(self, input_, dt=None):
@@ -122,7 +127,7 @@ class PID(object):
 
         # compute integral and derivative terms
         self._integral += self.Ki * error * dt
-        self._integral = _clamp(self._integral, self.output_limits)  # avoid integral windup
+        self._integral = _clamp(self._integral, self.integral_limits)  # avoid integral windup
 
         self._derivative = -self.Kd * d_input / dt
 
@@ -223,8 +228,33 @@ class PID(object):
         self._min_output = min_output
         self._max_output = max_output
 
-        self._integral = _clamp(self._integral, self.output_limits)
         self._last_output = _clamp(self._last_output, self.output_limits)
+        
+    @property
+    def integral_limits(self):
+        """
+        The current integral limits as a 2-tuple: (lower, upper).
+
+        See also the *integral_limits* parameter in :meth:`PID.__init__`.
+        """
+        return self._min_integral, self._max_integral
+
+    @integral_limits.setter
+    def integral_limits(self, limits):
+        """Set the integral limits."""
+        if limits is None:
+            self._min_integral, self._max_integral = None, None
+            return
+
+        min_integral, max_integral = limits
+
+        if None not in limits and max_integral < min_integral:
+            raise ValueError('lower limit must be less than upper limit')
+
+        self._min_integral = min_integral
+        self._max_integral = max_integral
+
+        self._integral = _clamp(self._integral, self.integral_limits)
 
     def reset(self):
         """
@@ -237,7 +267,7 @@ class PID(object):
         self._integral = 0
         self._derivative = 0
 
-        self._integral = _clamp(self._integral, self.output_limits)
+        self._integral = _clamp(self._integral, self.integral_limits)
 
         self._last_time = _current_time()
         self._last_output = None
