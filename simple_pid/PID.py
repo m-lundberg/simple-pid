@@ -55,9 +55,10 @@ class PID(object):
             or above the upper limit. Either of the limits can also be set to None to have no limit
             in that direction. Setting output limits also avoids integral windup, since the
             integral term will never be allowed to grow outside of the limits.
-        :param integral_limits: Optional limits to place on the integral term to avoid 
-            integral windup, given as an iterable with 2 elements, in the same fashion as 
-            ``output_limits``. The integral term will not be allowed to grow outside of these bounds.
+        :param integral_limits: Optional limits to place on the integral term to avoid
+            integral windup, given as an iterable with 2 elements, in the same fashion as
+            ``output_limits``. The integral term will not be allowed to grow outside of these
+            bounds.
         :param auto_mode: Whether the controller should be enabled (auto mode) or not (manual mode)
         :param proportional_on_measurement: Whether the proportional term should be calculated on
             the input directly rather than on the error (which is the traditional way). Using
@@ -229,7 +230,7 @@ class PID(object):
         self._max_output = max_output
 
         self._last_output = _clamp(self._last_output, self.output_limits)
-        
+
     @property
     def integral_limits(self):
         """
