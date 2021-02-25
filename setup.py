@@ -1,5 +1,4 @@
-
-from setuptools import setup
+from setuptools import setup, find_packages
 
 from codecs import open
 from os import path
@@ -26,7 +25,7 @@ setup(
         'Programming Language :: Python :: 3',
     ],
     keywords='pid controller control',
-    packages=['simple_pid'],
+    packages=find_packages(),
     package_data={
         'simple_pid': ['*.pyi', 'py.typed'],
     },
