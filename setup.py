@@ -32,7 +32,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     extras_require={
-        'docs': ['m2r', 'sphinx-rtd-theme']
+        'docs': ['m2r', 'sphinx-rtd-theme'],
     },
     project_urls={
         'Documentation': 'https://simple-pid.readthedocs.io/',

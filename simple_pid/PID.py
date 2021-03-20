@@ -14,7 +14,7 @@ def _clamp(value, limits):
 
 
 try:
-    # get monotonic time to ensure that time deltas are always positive
+    # Get monotonic time to ensure that time deltas are always positive
     _current_time = time.monotonic
 except AttributeError:
     # time.monotonic() not available (using python < 3.3), fallback to time.time()
@@ -35,7 +35,7 @@ class PID(object):
         output_limits=(None, None),
         auto_mode=True,
         proportional_on_measurement=False,
-        error_map=None
+        error_map=None,
     ):
         """
         Initialize a new PID controller.
@@ -100,39 +100,37 @@ class PID(object):
         elif dt <= 0:
             raise ValueError('dt has negative value {}, must be positive'.format(dt))
 
-        if (self.sample_time is not None) \
-        and (dt < self.sample_time) \
-        and (self._last_output is not None):
-            # only update every sample_time seconds
+        if self.sample_time is not None and dt < self.sample_time and self._last_output is not None:
+            # Only update every sample_time seconds
             return self._last_output
 
-        # compute error terms
+        # Compute error terms
         error = self.setpoint - input_
         d_input = input_ - (self._last_input if (self._last_input is not None) else input_)
 
-        # check if must map the error
+        # Check if must map the error
         if self.error_map is not None:
             error = self.error_map(error)
 
-        # compute the proportional term
+        # Compute the proportional term
         if not self.proportional_on_measurement:
-            # regular proportional-on-error, simply set the proportional term
+            # Regular proportional-on-error, simply set the proportional term
             self._proportional = self.Kp * error
         else:
-            # add the proportional error on measurement to error_sum
+            # Add the proportional error on measurement to error_sum
             self._proportional -= self.Kp * d_input
 
-        # compute integral and derivative terms
+        # Compute integral and derivative terms
         self._integral += self.Ki * error * dt
-        self._integral = _clamp(self._integral, self.output_limits)  # avoid integral windup
+        self._integral = _clamp(self._integral, self.output_limits)  # Avoid integral windup
 
         self._derivative = -self.Kd * d_input / dt
 
-        # compute final output
+        # Compute final output
         output = self._proportional + self._integral + self._derivative
         output = _clamp(output, self.output_limits)
 
-        # keep track of state
+        # Keep track of state
         self._last_output = output
         self._last_input = input_
         self._last_time = now
@@ -193,7 +191,7 @@ class PID(object):
             auto mode.
         """
         if enabled and not self._auto_mode:
-            # switching from manual mode to auto, reset
+            # Switching from manual mode to auto, reset
             self.reset()
 
             self._integral = last_output if (last_output is not None) else 0

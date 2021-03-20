@@ -27,7 +27,7 @@ def test_I():
     pid = PID(0, 10, 0, setpoint=10, sample_time=0.1)
     time.sleep(0.1)
 
-    assert round(pid(0)) == 10.0  # make sure we are close to expected value
+    assert round(pid(0)) == 10.0  # Make sure we are close to expected value
     time.sleep(0.1)
 
     assert round(pid(0)) == 20.0
@@ -46,11 +46,11 @@ def test_I_negative_setpoint():
 def test_D():
     pid = PID(0, 0, 0.1, setpoint=10, sample_time=0.1)
 
-    # should not compute derivative when there is no previous input (don't assume 0 as first input)
+    # Should not compute derivative when there is no previous input (don't assume 0 as first input)
     assert pid(0) == 0
     time.sleep(0.1)
 
-    # derivative is 0 when input is the same
+    # Derivative is 0 when input is the same
     assert pid(0) == 0
     assert pid(0) == 0
     time.sleep(0.1)
@@ -64,11 +64,11 @@ def test_D_negative_setpoint():
     pid = PID(0, 0, 0.1, setpoint=-10, sample_time=0.1)
     time.sleep(0.1)
 
-    # should not compute derivative when there is no previous input (don't assume 0 as first input)
+    # Should not compute derivative when there is no previous input (don't assume 0 as first input)
     assert pid(0) == 0
     time.sleep(0.1)
 
-    # derivative is 0 when input is the same
+    # Derivative is 0 when input is the same
     assert pid(0) == 0
     assert pid(0) == 0
     time.sleep(0.1)
@@ -83,7 +83,7 @@ def test_D_negative_setpoint():
 def test_desired_state():
     pid = PID(10, 5, 2, setpoint=10, sample_time=None)
 
-    # should not make any adjustment when setpoint is achieved
+    # Should not make any adjustment when setpoint is achieved
     assert pid(10) == 0
 
 
@@ -102,7 +102,7 @@ def test_sample_time():
 
     control = pid(0)
 
-    # last value should be returned again
+    # Last value should be returned again
     assert pid(100) == control
 
 
@@ -118,22 +118,22 @@ def test_monotonic():
 def test_auto_mode():
     pid = PID(1, 0, 0, setpoint=10, sample_time=None)
 
-    # ensure updates happen by default
+    # Ensure updates happen by default
     assert pid(0) == 10
     assert pid(5) == 5
 
-    # ensure no new updates happen when auto mode is off
+    # Ensure no new updates happen when auto mode is off
     pid.auto_mode = False
     assert pid(1) == 5
     assert pid(7) == 5
 
-    # should reset when reactivating
+    # Should reset when reactivating
     pid.auto_mode = True
     assert pid._last_input is None
     assert pid._integral == 0
     assert pid(8) == 2
 
-    # last update time should be reset to avoid huge dt
+    # Last update time should be reset to avoid huge dt
     from simple_pid.PID import _current_time
 
     pid.auto_mode = False
@@ -141,7 +141,7 @@ def test_auto_mode():
     pid.auto_mode = True
     assert _current_time() - pid._last_time < 0.01
 
-    # check that setting last_output works
+    # Check that setting last_output works
     pid.auto_mode = False
     pid.set_auto_mode(True, last_output=10)
     assert pid._integral == 10
@@ -164,22 +164,22 @@ def test_clamp():
     assert _clamp(None, (None, None)) is None
     assert _clamp(None, (-10, 10)) is None
 
-    # no limits
+    # No limits
     assert _clamp(0, (None, None)) == 0
     assert _clamp(100, (None, None)) == 100
     assert _clamp(-100, (None, None)) == -100
 
-    # only lower limit
+    # Only lower limit
     assert _clamp(0, (0, None)) == 0
     assert _clamp(100, (0, None)) == 100
     assert _clamp(-100, (0, None)) == 0
 
-    # only upper limit
+    # Only upper limit
     assert _clamp(0, (None, 0)) == 0
     assert _clamp(100, (None, 0)) == 0
     assert _clamp(-100, (None, 0)) == -100
 
-    # both limits
+    # Both limits
     assert _clamp(0, (-10, 10)) == 0
     assert _clamp(-10, (-10, 10)) == -10
     assert _clamp(10, (-10, 10)) == 10
@@ -199,27 +199,26 @@ def test_repr():
 
 def test_converge_system():
     pid = PID(1, 0.8, 0.04, setpoint=5, output_limits=(-5, 5))
-    PV = 0  # process variable
+    pv = 0  # Process variable
 
-    def update_system(C, dt):
-        # calculate a simple system model
-        return PV + C * dt - 1 * dt
+    def update_system(c, dt):
+        # Calculate a simple system model
+        return pv + c * dt - 1 * dt
 
     start_time = time.time()
     last_time = start_time
 
     while time.time() - start_time < 120:
-        C = pid(PV)
-        PV = update_system(C, time.time() - last_time)
+        c = pid(pv)
+        pv = update_system(c, time.time() - last_time)
 
         last_time = time.time()
 
-    # check if system has converged
-    assert abs(PV - 5) < 0.1
+    # Check if system has converged
+    assert abs(pv - 5) < 0.1
 
 
 def test_error_map():
-    # error map function
     import math
 
     def pi_clip(angle):
@@ -232,9 +231,9 @@ def test_error_map():
                 return angle + 2 * math.pi
         return angle
 
-    sp = 0.  # setpoint
-    pid = PID(1, 0, 0, setpoint=sp, sample_time=0.1, error_map=pi_clip)  # include error mapping
-    PV = 5.  # process variable
+    sp = 0.0  # Setpoint
+    pv = 5.0  # Process variable
+    pid = PID(1, 0, 0, setpoint=0.0, sample_time=0.1, error_map=pi_clip)
 
-    # check if error value is mapped by the function
-    assert pid(PV) == pi_clip(sp - PV)  # clip the error
+    # Check if error value is mapped by the function
+    assert pid(pv) == pi_clip(sp - pv)

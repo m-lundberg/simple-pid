@@ -16,10 +16,10 @@ class WaterBoiler:
 
     def update(self, boiler_power, dt):
         if boiler_power > 0:
-            # boiler can only produce heat, not cold
+            # Boiler can only produce heat, not cold
             self.water_temp += 1 * boiler_power * dt
 
-        # some heat dissipation
+        # Some heat dissipation
         self.water_temp -= 0.02 * dt
         return self.water_temp
 
@@ -34,7 +34,7 @@ if __name__ == '__main__':
     start_time = time.time()
     last_time = start_time
 
-    # keep track of values for plotting
+    # Keep track of values for plotting
     setpoint, y, x = [], [], []
 
     while time.time() - start_time < 10:
