@@ -1,0 +1,12 @@
+include CHANGELOG.md
+include LICENSE.md
+include README.md
+
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+
+recursive-include docs *.rst conf.py Makefile requirements.txt
+recursive-include examples *.md *.txt *.py
+
+include simple_pid/*.pyi
+include simple_pid/py.typed
