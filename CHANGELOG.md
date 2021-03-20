@@ -7,17 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [1.0.0] - 2021-03-20
+
 ### Added
 
-- Function to map the erro value, now is possibly to clip the error value, i.e., [-pi, pi[
+- Function to map the error value to a different domain
 
 - Typing information through a stub file so that users of the library can use e.g.
   [mypy](https://github.com/python/mypy) to type check their code
 
 - This project now uses the [Black code style](https://github.com/psf/black)
 
-- The PID class now has a \_\_repr\_\_() method, meaning that objects of this type can be printed
+- The PID class now has a `__repr__()` method, meaning that objects of this type can be printed
   directly for use during development
+  
+- MANIFEST.in file to ensure all necessary files are included in the source distribution
 
 ### Fixed
 
@@ -79,7 +83,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial implementation
 
-[Unreleased]: https://github.com/m-lundberg/simple-pid/compare/v0.2.4...HEAD
+[Unreleased]: https://github.com/m-lundberg/simple-pid/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/m-lundberg/simple-pid/compare/v0.2.4...v1.0.0
 [0.2.4]: https://github.com/m-lundberg/simple-pid/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/m-lundberg/simple-pid/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/m-lundberg/simple-pid/compare/v0.2.1...v0.2.2
