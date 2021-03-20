@@ -15,14 +15,14 @@ Usage is very simple:
 from simple_pid import PID
 pid = PID(1, 0.1, 0.05, setpoint=1)
 
-# assume we have a system we want to control in controlled_system
+# Assume we have a system we want to control in controlled_system
 v = controlled_system.update(0)
 
 while True:
-    # compute new ouput from the PID according to the systems current value
+    # Compute new output from the PID according to the systems current value
     control = pid(v)
     
-    # feed the PID output to the system and get its current value
+    # Feed the PID output to the system and get its current value
     v = controlled_system.update(control)
 ```
 
@@ -43,7 +43,7 @@ output = pid(current_value)
 ### The basics
 The PID works best when it is updated at regular intervals. To achieve this, set `sample_time` to the amount of time there should be between each update and then call the PID every time in the program loop. A new output will only be calculated when `sample_time` seconds has passed:
 ```python
-pid.sample_time = 0.01  # update every 0.01 seconds
+pid.sample_time = 0.01  # Update every 0.01 seconds
 
 while True:
     output = pid(current_value)
@@ -70,15 +70,15 @@ Note that all the tunings should have the same sign.
 
 In order to get output values in a certain range, and also to avoid [integral windup](https://en.wikipedia.org/wiki/Integral_windup) (since the integral term will never be allowed to grow outside of these limits), the output can be limited to a range:
 ```python
-pid.output_limits = (0, 10)    # output value will be between 0 and 10
-pid.output_limits = (0, None)  # output will always be above 0, but with no upper bound
+pid.output_limits = (0, 10)    # Output value will be between 0 and 10
+pid.output_limits = (0, None)  # Output will always be above 0, but with no upper bound
 ```
 
 ### Other features
 #### Auto mode
 To disable the PID so that no new values are computed, set auto mode to False:
 ```python
-pid.auto_mode = False  # no new values will be computed when pid is called
+pid.auto_mode = False  # No new values will be computed when pid is called
 pid.auto_mode = True   # pid is enabled again
 ```
 When disabling the PID and controlling a system manually, it might be useful to tell the PID controller where to start from when giving back control to it. This can be done by enabling auto mode like this:
@@ -90,7 +90,7 @@ This will set the I-term to the value given to `last_output`, meaning that if th
 #### Observing separate components
 When tuning the PID, it can be useful to see how each of the components contribute to the output. They can be seen like this:
 ```python
-p, i, d = pid.components  # the separate terms are now in p, i, d
+p, i, d = pid.components  # The separate terms are now in p, i, d
 ```
 
 #### Proportional on measurement

@@ -7,7 +7,7 @@ Simple simulation of a water boiler which can heat up water and where the heat d
 Optionally, create a virtual environment for this example and activate it.
 
 ```bash
-python -m venv water_boiler_venv  # assuming Python 3
+python -m venv water_boiler_venv  # Assuming Python 3
 . water_boiler_venv/bin/activate
 ```
 
@@ -20,13 +20,13 @@ pip install -r requirements.txt
 ## Usage
 
 ```bash
-# activate the virtual environment if you use one:
+# Activate the virtual environment if you use one:
 . water_boiler_venv/bin/activate
 
-# run the example:
+# Run the example:
 python water_boiler.py
 
-# once you're done deactivate the virtual environment if you use one:
+# Once you're done deactivate the virtual environment if you use one:
 deactivate
 ```
 
