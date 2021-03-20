@@ -6,9 +6,9 @@ def _clamp(value, limits):
     lower, upper = limits
     if value is None:
         return None
-    elif upper is not None and value > upper:
+    elif (upper is not None) and (value > upper):
         return upper
-    elif lower is not None and value < lower:
+    elif (lower is not None) and (value < lower):
         return lower
     return value
 
@@ -96,17 +96,19 @@ class PID(object):
 
         now = _current_time()
         if dt is None:
-            dt = now - self._last_time if now - self._last_time else 1e-16
+            dt = now - self._last_time if (now - self._last_time) else 1e-16
         elif dt <= 0:
             raise ValueError('dt has negative value {}, must be positive'.format(dt))
 
-        if self.sample_time is not None and dt < self.sample_time and self._last_output is not None:
+        if (self.sample_time is not None) \
+        and (dt < self.sample_time) \
+        and (self._last_output is not None):
             # only update every sample_time seconds
             return self._last_output
 
         # compute error terms
         error = self.setpoint - input_
-        d_input = input_ - (self._last_input if self._last_input is not None else input_)
+        d_input = input_ - (self._last_input if (self._last_input is not None) else input_)
 
         # check if must map the error
         if self.error_map is not None:
@@ -194,7 +196,7 @@ class PID(object):
             # switching from manual mode to auto, reset
             self.reset()
 
-            self._integral = last_output if last_output is not None else 0
+            self._integral = last_output if (last_output is not None) else 0
             self._integral = _clamp(self._integral, self.output_limits)
 
         self._auto_mode = enabled
@@ -217,7 +219,7 @@ class PID(object):
 
         min_output, max_output = limits
 
-        if None not in limits and max_output < min_output:
+        if (None not in limits) and (max_output < min_output):
             raise ValueError('lower limit must be less than upper limit')
 
         self._min_output = min_output
