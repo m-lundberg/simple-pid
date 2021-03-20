@@ -25,7 +25,7 @@ setup(
         'Programming Language :: Python :: 3',
     ],
     keywords='pid controller control',
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests']),
     package_data={
         'simple_pid': ['*.pyi', 'py.typed'],
     },

@@ -7,6 +7,7 @@ recursive-exclude * *.py[co]
 
 recursive-include docs *.rst conf.py Makefile requirements.txt
 recursive-include examples *.md *.txt *.py
+recursive-include tests *.py
 
 include simple_pid/*.pyi
 include simple_pid/py.typed
