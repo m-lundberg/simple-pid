@@ -9,6 +9,14 @@ def _clamp(value: Optional[float], limits: _Limits) -> Optional[float]: ...
 _current_time: Callable[[], float]
 
 class PID(object):
+    Kp: float
+    Ki: float
+    Kd: float
+    setpoint: float
+    sample_time: Optional[float]
+    output_limits: _Limits
+    proportional_on_measurement: bool
+    error_map: Optional[Callable[[float], float]]
     def __init__(
         self,
         Kp: float = ...,
