@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [1.0.1] - 2021-04-11
+
+### Fixed
+
+- Added type information for public instance variables to typing stub
+
 ## [1.0.0] - 2021-03-20
 
 ### Added
@@ -83,7 +89,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial implementation
 
-[Unreleased]: https://github.com/m-lundberg/simple-pid/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/m-lundberg/simple-pid/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/m-lundberg/simple-pid/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/m-lundberg/simple-pid/compare/v0.2.4...v1.0.0
 [0.2.4]: https://github.com/m-lundberg/simple-pid/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/m-lundberg/simple-pid/compare/v0.2.2...v0.2.3
