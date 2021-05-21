@@ -116,6 +116,29 @@ def pi_clip(angle):
 pid.error_map = pi_clip
 ```
 
+#### Output Bias
+
+An optional bias constant can be provided when creating a `PID` instance. This constant
+is applied to the output before any output limits are applied. This can be useful for systems
+which require a non-zero output to maintain a steady-state.
+
+For example, in a simple proportional-only mode, the PID output will be zero when the error
+is zero ie. the system has reached the setpoint:
+
+```python
+>>> pid = PID(1, 0, 0, setpoint=10)
+>>> pid(10)
+0.0
+```
+
+But when we apply a bias constant, our steady-state output is equal to the bias:
+
+```python
+>>> pid = PID(1, 0, 0, setpoint=10, bias=5)
+>>> pid(10)
+5.0
+```
+
 ## Tests
 Use the following to run tests:
 ```

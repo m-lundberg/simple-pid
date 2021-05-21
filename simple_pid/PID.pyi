@@ -17,6 +17,7 @@ class PID(object):
     output_limits: _Limits
     proportional_on_measurement: bool
     error_map: Optional[Callable[[float], float]]
+    bias: Optional[float]
     def __init__(
         self,
         Kp: float = ...,
@@ -28,6 +29,7 @@ class PID(object):
         auto_mode: bool = ...,
         proportional_on_measurement: bool = ...,
         error_map: Optional[Callable[[float], float]] = ...,
+        bias: Optional[float] = ...,
     ) -> None: ...
     def __call__(self, input_: float, dt: Optional[float] = ...) -> Optional[float]: ...
     def __repr__(self) -> str: ...

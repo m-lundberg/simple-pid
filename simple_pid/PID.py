@@ -36,6 +36,7 @@ class PID(object):
         auto_mode=True,
         proportional_on_measurement=False,
         error_map=None,
+        bias=0,
     ):
         """
         Initialize a new PID controller.
@@ -59,6 +60,7 @@ class PID(object):
             the input directly rather than on the error (which is the traditional way). Using
             proportional-on-measurement avoids overshoot for some types of systems.
         :param error_map: Function to transform the error value in another constrained value.
+        :param bias: Constant output bias. Applied before output limits.
         """
         self.Kp, self.Ki, self.Kd = Kp, Ki, Kd
         self.setpoint = setpoint
@@ -68,6 +70,7 @@ class PID(object):
         self._auto_mode = auto_mode
         self.proportional_on_measurement = proportional_on_measurement
         self.error_map = error_map
+        self.bias = bias
 
         self._proportional = 0
         self._integral = 0
@@ -127,7 +130,7 @@ class PID(object):
         self._derivative = -self.Kd * d_input / dt
 
         # Compute final output
-        output = self._proportional + self._integral + self._derivative
+        output = self._proportional + self._integral + self._derivative + self.bias
         output = _clamp(output, self.output_limits)
 
         # Keep track of state
@@ -143,8 +146,9 @@ class PID(object):
             'Kp={self.Kp!r}, Ki={self.Ki!r}, Kd={self.Kd!r}, '
             'setpoint={self.setpoint!r}, sample_time={self.sample_time!r}, '
             'output_limits={self.output_limits!r}, auto_mode={self.auto_mode!r}, '
-            'proportional_on_measurement={self.proportional_on_measurement!r},'
-            'error_map={self.error_map!r}'
+            'proportional_on_measurement={self.proportional_on_measurement!r}, '
+            'error_map={self.error_map!r}, '
+            'bias={self.bias!r}'
             ')'
         ).format(self=self)
 
