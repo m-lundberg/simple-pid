@@ -237,3 +237,26 @@ def test_error_map():
 
     # Check if error value is mapped by the function
     assert pid(pv) == pi_clip(sp - pv)
+
+
+def test_bias():
+    bias = 5
+    setpoint = 10
+    kp = 1
+    upper_limit = 20
+    lower_limit = 0
+
+    pid = PID(
+        kp,
+        0,
+        0,
+        setpoint=setpoint,
+        sample_time=None,
+        bias=bias,
+        output_limits=(lower_limit, upper_limit)
+    )
+
+    assert pid(setpoint) == bias
+    assert pid(setpoint - 5) == bias + (kp * 5)
+    assert pid(setpoint - 50) == upper_limit
+    assert pid(setpoint + 50) == lower_limit
