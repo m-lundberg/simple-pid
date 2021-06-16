@@ -75,6 +75,7 @@ class PID(object):
 
         self._last_time = None
         self._last_output = None
+        self._last_error = None
         self._last_input = None
 
         self.output_limits = output_limits
@@ -107,6 +108,7 @@ class PID(object):
         # Compute error terms
         error = self.setpoint - input_
         d_input = input_ - (self._last_input if (self._last_input is not None) else input_)
+        d_error = error - (self._last_error if (self._last_error is not None) else error)
 
         # Check if must map the error
         if self.error_map is not None:
@@ -124,7 +126,7 @@ class PID(object):
         self._integral += self.Ki * error * dt
         self._integral = _clamp(self._integral, self.output_limits)  # Avoid integral windup
 
-        self._derivative = -self.Kd * d_input / dt
+        self._derivative = -self.Kd * d_error / dt
 
         # Compute final output
         output = self._proportional + self._integral + self._derivative
@@ -133,6 +135,7 @@ class PID(object):
         # Keep track of state
         self._last_output = output
         self._last_input = input_
+        self._last_error = error
         self._last_time = now
 
         return output
