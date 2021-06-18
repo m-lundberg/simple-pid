@@ -99,6 +99,12 @@ To eliminate overshoot in certain types of systems, you can calculate the [propo
 pid.proportional_on_measurement = True
 ```
 
+#### Differential on measurement
+By default the [differential term is calculated on the measurement](http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/) instead of the error. This can be disabled like this:
+```python
+pid.differential_on_measurement = False
+```
+
 #### Error mapping
 To transform the error value to another domain before doing any computations on it, you can supply an `error_map` callback function to the PID. The callback function should take one argument which is the error from the setpoint. This can be used e.g. to get a degree value error in a yaw angle control with values between [-pi, pi):
 ```python

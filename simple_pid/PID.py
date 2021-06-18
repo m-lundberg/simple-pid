@@ -35,6 +35,7 @@ class PID(object):
         output_limits=(None, None),
         auto_mode=True,
         proportional_on_measurement=False,
+        differetial_on_measurement=True,
         error_map=None,
     ):
         """
@@ -58,6 +59,8 @@ class PID(object):
         :param proportional_on_measurement: Whether the proportional term should be calculated on
             the input directly rather than on the error (which is the traditional way). Using
             proportional-on-measurement avoids overshoot for some types of systems.
+        :param differetial_on_measurement: Whether the differential term should be calculated on
+            the input directly rather than on the error (which is the traditional way).
         :param error_map: Function to transform the error value in another constrained value.
         """
         self.Kp, self.Ki, self.Kd = Kp, Ki, Kd
@@ -67,6 +70,7 @@ class PID(object):
         self._min_output, self._max_output = None, None
         self._auto_mode = auto_mode
         self.proportional_on_measurement = proportional_on_measurement
+        self.differetial_on_measurement = differetial_on_measurement
         self.error_map = error_map
 
         self._proportional = 0
@@ -126,7 +130,10 @@ class PID(object):
         self._integral += self.Ki * error * dt
         self._integral = _clamp(self._integral, self.output_limits)  # Avoid integral windup
 
-        self._derivative = -self.Kd * d_error / dt
+        if self.differetial_on_measurement:
+            self._derivative = -self.Kd * d_input / dt
+        else:
+            self._derivative = self.Kd * d_error / dt
 
         # Compute final output
         output = self._proportional + self._integral + self._derivative
@@ -146,7 +153,8 @@ class PID(object):
             'Kp={self.Kp!r}, Ki={self.Ki!r}, Kd={self.Kd!r}, '
             'setpoint={self.setpoint!r}, sample_time={self.sample_time!r}, '
             'output_limits={self.output_limits!r}, auto_mode={self.auto_mode!r}, '
-            'proportional_on_measurement={self.proportional_on_measurement!r},'
+            'proportional_on_measurement={self.proportional_on_measurement!r}, '
+            'differetial_on_measurement={self.differetial_on_measurement!r}, '
             'error_map={self.error_map!r}'
             ')'
         ).format(self=self)
