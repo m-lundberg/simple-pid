@@ -217,8 +217,9 @@ def test_converge_system():
     # Check if system has converged
     assert abs(pv - 5) < 0.1
 
+
 def test_converge_diff_on_error():
-    pid = PID(1, 0.8, 0.04, setpoint=5, output_limits=(-5, 5),differetial_on_measurement = False)
+    pid = PID(1, 0.8, 0.04, setpoint=5, output_limits=(-5, 5), differetial_on_measurement=False)
     pv = 0  # Process variable
 
     def update_system(c, dt):
