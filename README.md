@@ -1,19 +1,15 @@
-# simple-pid
-
-[![Travis](https://travis-ci.com/m-lundberg/simple-pid.svg?branch=master)](https://travis-ci.com/m-lundberg/simple-pid)
-[![PyPI](https://img.shields.io/pypi/v/simple-pid.svg)](https://pypi.org/project/simple-pid/)
-[![Read the Docs](https://img.shields.io/readthedocs/simple-pid.svg)](https://simple-pid.readthedocs.io/)
-[![License](https://img.shields.io/github/license/m-lundberg/simple-pid.svg)](https://github.com/m-lundberg/simple-pid/blob/master/LICENSE.md)
-[![Downloads](https://pepy.tech/badge/simple-pid)](https://pepy.tech/project/simple-pid)
+# MicroPython simple-pid
+[![Read the Docs](https://img.shields.io/readthedocs/simple-pid.svg)](https://micropython-simple-pid.readthedocs.io/)
+[![License](https://img.shields.io/github/license/m-lundberg/simple-pid.svg)](https://github.com/JorgeGMarques/simple-pid/blob/master/LICENSE.md)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-A simple and easy to use PID controller in Python. If you want a PID controller without external dependencies that just works, this is for you! The PID was designed to be robust with help from [Brett Beauregards guide](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/).
+A simple and easy to use PID controller in MicroPython. If you want a PID controller without external dependencies that just works, this is for you! The PID was designed to be robust with help from [Brett Beauregards guide](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/) and ported to MicroPython from the [Python simple-pid](https://github.com/m-lundberg/simple-pid) version.
 
 Usage is very simple:
 
 ```python
-from simple_pid import PID
-pid = PID(1, 0.1, 0.05, setpoint=1)
+from PID import PID
+pid = PID(1, 0.1, 0.05, setpoint=1, scale='us')
 
 # Assume we have a system we want to control in controlled_system
 v = controlled_system.update(0)
@@ -26,13 +22,10 @@ while True:
     v = controlled_system.update(control)
 ```
 
-Complete API documentation can be found [here](https://simple-pid.readthedocs.io/en/latest/simple_pid.html#module-simple_pid.PID).
+Complete API documentation can be found [here](https://micropython-simple-pid.readthedocs.io/en/latest/simple_pid.html#module-simple_pid.PID).
 
 ## Installation
-To install, run:
-```
-pip install simple-pid
-```
+Just upload the `PID.py` to your board running MicroPython
 
 ## Usage
 The `PID` class implements `__call__()`, which means that to compute a new output value, you simply call the object like this:
@@ -41,12 +34,17 @@ output = pid(current_value)
 ```
 
 ### The basics
-The PID works best when it is updated at regular intervals. To achieve this, set `sample_time` to the amount of time there should be between each update and then call the PID every time in the program loop. A new output will only be calculated when `sample_time` seconds has passed:
+The PID works best when it is updated at regular intervals. To achieve this, set `sample_time` to the amount of time there should be between each update and then call the PID every time in the program loop. A new output will only be calculated when `sample_time` in the setted scale has passed:
 ```python
-pid.sample_time = 0.01  # Update every 0.01 seconds
+pid.sample_time = 10  # Update every 10 milliseconds when set to the millisecond ('ms') scale
 
 while True:
     output = pid(current_value)
+```
+
+To set the scale of the controller, add the following when initiatin the controller, accepted values are 's' for seconds, 'ms' for miliseconds, 'us' for microseconds, 'ns' for nanoscondas and 'cpu' for the highest precision at cpu clock. On default and on error set to seconds.
+```python
+pid = PID(1, 0.1, 0.05, setpoint=1, scale='cpu')
 ```
 
 To set the setpoint, ie. the value that the PID is trying to achieve, simply set it like this:
@@ -116,11 +114,5 @@ def pi_clip(angle):
 pid.error_map = pi_clip
 ```
 
-## Tests
-Use the following to run tests:
-```
-tox
-```
-
 ## License
-Licensed under the [MIT License](https://github.com/m-lundberg/simple-pid/blob/master/LICENSE.md).
+Licensed under the [MIT License](https://github.com/JorgeGMarques/simple-pid/edit/master/LICENSE.md).
