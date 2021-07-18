@@ -1,6 +1,6 @@
 # MicroPython simple-pid
-[![Read the Docs](https://img.shields.io/readthedocs/simple-pid.svg)](https://micropython-simple-pid.readthedocs.io/)
-[![License](https://img.shields.io/github/license/m-lundberg/simple-pid.svg)](https://github.com/JorgeGMarques/micropython-simple-pid/blob/master/LICENSE.md)
+[![Read the Docs](https://img.shields.io/readthedocs/micropython-simple-pid.svg)](https://micropython-simple-pid.readthedocs.io/)
+[![License](https://img.shields.io/github/license/JorgeGMarques/micropython-simple-pid.svg)](https://github.com/JorgeGMarques/micropython-simple-pid/blob/master/LICENSE.md)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 A simple and easy to use PID controller in MicroPython. If you want a PID controller without external dependencies that just works, this is for you! The PID was designed to be robust with help from [Brett Beauregards guide](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/) and ported to MicroPython from the [Python simple-pid](https://github.com/m-lundberg/simple-pid) version.
