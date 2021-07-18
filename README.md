@@ -25,7 +25,7 @@ while True:
 Complete API documentation can be found [here](https://micropython-simple-pid.readthedocs.io/en/latest/simple_pid.html#module-simple_pid.PID).
 
 ## Installation
-Just upload the `PID.py` to your board running MicroPython
+Just upload the `PID.py` to your board running MicroPython.
 
 ## Usage
 The `PID` class implements `__call__()`, which means that to compute a new output value, you simply call the object like this:
