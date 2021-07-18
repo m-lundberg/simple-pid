@@ -15,7 +15,7 @@ setup(
     description='A simple, easy to use PID controller for MicroPython',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/JorgeGMarques/simple-pid',
+    url='https://github.com/JorgeGMarques/micropython-simple-pid',
     author='Martin Lundberg',
     license='MIT',
     classifiers=[

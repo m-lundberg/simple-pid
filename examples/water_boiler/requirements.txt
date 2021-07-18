@@ -1,1 +1,1 @@
-simple-pid==1.0.0
+micropython-simple-pid==1.1.0
