@@ -24,6 +24,7 @@ class PID(object):
         Kd: float = ...,
         setpoint: float = ...,
         sample_time: Optional[float] = ...,
+        scale: Optional[str],
         output_limits: _Limits = ...,
         auto_mode: bool = ...,
         proportional_on_measurement: bool = ...,

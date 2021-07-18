@@ -20,8 +20,8 @@ sys.path.insert(0, os.path.abspath('../../'))
 # -- Project information -----------------------------------------------------
 
 project = 'simple-pid'
-copyright = '2018, Martin Lundberg'
-author = 'Martin Lundberg'
+copyright = '2018, Martin Lundberg, 2021, Jorge Marques'
+author = 'Martin Lundberg, Jorge Marques'
 
 # The short X.Y version
 version = ''
@@ -104,7 +104,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'simple-piddoc'
+htmlhelp_basename = 'micropython-simple-piddoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -131,8 +131,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'simple-pid.tex', 'simple-pid Documentation',
-     'Martin Lundberg', 'manual'),
+    (master_doc, 'micropython-simple-pid.tex', 'micropython-simple-pid Documentation',
+     'Martin Lundberg, Jorge Marques', 'manual'),
 ]
 
 
@@ -141,7 +141,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'simple-pid', 'simple-pid Documentation',
+    (master_doc, 'micropython-simple-pid', 'micropython-simple-pid Documentation',
      [author], 1)
 ]
 
@@ -152,8 +152,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'simple-pid', 'simple-pid Documentation',
-     author, 'simple-pid', 'One line description of project.',
+    (master_doc, 'micropython-simple-pid', 'micropython-simple-pid Documentation',
+     author, 'micropython-simple-pid', 'One line description of project.',
      'Miscellaneous'),
 ]
 

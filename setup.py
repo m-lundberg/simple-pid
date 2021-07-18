@@ -10,12 +10,12 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='simple-pid',
-    version='1.0.1',
-    description='A simple, easy to use PID controller',
+    name='micropython-simple-pid',
+    version='1.1.0',
+    description='A simple, easy to use PID controller for MicroPython',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/m-lundberg/simple-pid',
+    url='https://github.com/JorgeGMarques/simple-pid',
     author='Martin Lundberg',
     license='MIT',
     classifiers=[
@@ -35,6 +35,6 @@ setup(
         'docs': ['m2r', 'sphinx-rtd-theme'],
     },
     project_urls={
-        'Documentation': 'https://simple-pid.readthedocs.io/',
+        'Documentation': 'https://micropython-simple-pid.readthedocs.io/',
     },
 )

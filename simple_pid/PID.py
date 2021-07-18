@@ -1,6 +1,4 @@
-import time
-import warnings
-
+import utime
 
 def _clamp(value, limits):
     lower, upper = limits
@@ -12,16 +10,6 @@ def _clamp(value, limits):
         return lower
     return value
 
-
-try:
-    # Get monotonic time to ensure that time deltas are always positive
-    _current_time = time.monotonic
-except AttributeError:
-    # time.monotonic() not available (using python < 3.3), fallback to time.time()
-    _current_time = time.time
-    warnings.warn('time.monotonic() not available in python < 3.3, using time.time() as fallback')
-
-
 class PID(object):
     """A simple PID controller."""
 
@@ -31,11 +19,12 @@ class PID(object):
         Ki=0.0,
         Kd=0.0,
         setpoint=0,
-        sample_time=0.01,
-        output_limits=(None, None),
+        sample_time=1,
+        scale='s',
+        output_limits=[None, None],
         auto_mode=True,
         proportional_on_measurement=False,
-        error_map=None,
+        error_map=None
     ):
         """
         Initialize a new PID controller.
@@ -44,11 +33,14 @@ class PID(object):
         :param Ki: The value for the integral gain Ki
         :param Kd: The value for the derivative gain Kd
         :param setpoint: The initial setpoint that the PID will try to achieve
-        :param sample_time: The time in seconds which the controller should wait before generating
+        :param sample_time: The interval in the setted scale which the controller should wait before generating
             a new output value. The PID works best when it is constantly called (eg. during a
             loop), but with a sample time set so that the time difference between each update is
             (close to) constant. If set to None, the PID will compute a new output value every time
             it is called.
+        :param scale: Set the scale of the controller, accepted values are 's' for seconds, 'ms' for
+            miliseconds, 'us' for microseconds, 'ns' for nanoscondas and 'cpu' for the highest precision
+            at cpu clock. On default and on error set to seconds.
         :param output_limits: The initial output limits to use, given as an iterable with 2
             elements, for example: (lower, upper). The output will never go below the lower limit
             or above the upper limit. Either of the limits can also be set to None to have no limit
@@ -63,6 +55,20 @@ class PID(object):
         self.Kp, self.Ki, self.Kd = Kp, Ki, Kd
         self.setpoint = setpoint
         self.sample_time = sample_time
+
+        def get_scale(x):
+            return {
+                's': 'time',
+                'ms': 'ticks_ms',
+                'us': 'ticks_us',
+                'ns': 'time_ns',
+                'cpu':'ticks_cpu'
+
+            }.get(x, 'time') # seconds is default if x is not found
+        self.scale = get_scale(scale)
+
+        if hasattr(utime, self.scale) and callable(func := getattr(utime, self.scale)):
+            self.time = func
 
         self._min_output, self._max_output = None, None
         self._auto_mode = auto_mode
@@ -85,7 +91,7 @@ class PID(object):
         Update the PID controller.
 
         Call the PID controller with *input_* and calculate and return a control output if
-        sample_time seconds has passed since the last update. If no new output is calculated,
+        sample_time has passed since the last update. If no new output is calculated,
         return the previous output instead (or None if no value has been calculated yet).
 
         :param dt: If set, uses this value for timestep instead of real time. This can be used in
@@ -94,14 +100,14 @@ class PID(object):
         if not self.auto_mode:
             return self._last_output
 
-        now = _current_time()
+        now = self.time()
         if dt is None:
-            dt = now - self._last_time if (now - self._last_time) else 1e-16
+            dt = utime.ticks_diff(now,self._last_time) if (utime.ticks_diff(now,self._last_time)) else 1e-16
         elif dt <= 0:
             raise ValueError('dt has negative value {}, must be positive'.format(dt))
 
         if self.sample_time is not None and dt < self.sample_time and self._last_output is not None:
-            # Only update every sample_time seconds
+            # Only update every sample_time
             return self._last_output
 
         # Compute error terms
@@ -239,6 +245,6 @@ class PID(object):
 
         self._integral = _clamp(self._integral, self.output_limits)
 
-        self._last_time = _current_time()
+        self._last_time = self.time()
         self._last_output = None
         self._last_input = None
