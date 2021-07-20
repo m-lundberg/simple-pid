@@ -1,5 +1,5 @@
 import utime
-from control import PID
+from PID import PID
 from machine import Timer
 
 
@@ -14,8 +14,8 @@ class WaterBoiler:
 
     def update(self, boiler_power, dt):
         if boiler_power > 0:
-            # Boiler can only produce heat, not cold
-        self.water_temp += 1 * boiler_power * dt / 1000  # just to convert from miliseconds to seconds
+        	# Boiler can only produce heat, not cold
+        	self.water_temp += 1 * boiler_power * dt / 1000  # just to convert from miliseconds to seconds
 
         # Some heat dissipation
         self.water_temp -= 0.2 * dt

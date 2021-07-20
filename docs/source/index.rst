@@ -10,7 +10,9 @@ Welcome to MicroPython simple-pid's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Modules:
+      intro
+      simple_pid.rst
 
 Indices and tables
 ==================

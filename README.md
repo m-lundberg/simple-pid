@@ -115,4 +115,4 @@ pid.error_map = pi_clip
 ```
 
 ## License
-Licensed under the [MIT License](https://github.com/JorgeGMarques/micropython-simple-pid/edit/master/LICENSE.md).
+Licensed under the [MIT License](https://github.com/JorgeGMarques/micropython-simple-pid/blob/master/LICENSE.md).
