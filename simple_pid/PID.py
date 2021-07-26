@@ -58,14 +58,23 @@ class PID(object):
 
         def get_scale(x):
             return {
-                's': 'time',
+                's' : 'time',
                 'ms': 'ticks_ms',
                 'us': 'ticks_us',
                 'ns': 'time_ns',
                 'cpu':'ticks_cpu'
-
             }.get(x, 'time') # seconds is default if x is not found
         self.scale = get_scale(scale)
+
+        def get_unit(x):
+            return {
+                's' : 1,
+                'ms': 1e-3,
+                'us': 1e-6,
+                'ns': 1e-9,
+                'cpu':1
+            }.get(x, 1) # tunings should be explicitly defined at 'ticks_cpu'
+        self.unit = get_unit(scale)
 
         if hasattr(utime, self.scale) and callable(func := getattr(utime, self.scale)):
             self.time = func
@@ -124,13 +133,13 @@ class PID(object):
             self._proportional = self.Kp * error
         else:
             # Add the proportional error on measurement to error_sum
-            self._proportional -= self.Kp * d_input
+            self._proportional -= self.Kp * self.unit * d_input
 
         # Compute integral and derivative terms
-        self._integral += self.Ki * error * dt
+        self._integral += (self.Ki * self.unit) * error * dt
         self._integral = _clamp(self._integral, self.output_limits)  # Avoid integral windup
 
-        self._derivative = -self.Kd * d_input / dt
+        self._derivative = -(self.Kd / self.unit) * d_input / dt
 
         # Compute final output
         output = self._proportional + self._integral + self._derivative
