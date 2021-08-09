@@ -19,7 +19,7 @@ class PID(object):
         Ki=0.0,
         Kd=0.0,
         setpoint=0,
-        sample_time=1,
+        sample_time=None,
         scale='s',
         output_limits=[None, None],
         auto_mode=True,
@@ -37,7 +37,7 @@ class PID(object):
             a new output value. The PID works best when it is constantly called (eg. during a
             loop), but with a sample time set so that the time difference between each update is
             (close to) constant. If set to None, the PID will compute a new output value every time
-            it is called.
+            it is called, keep None to use param dt for timestep.
         :param scale: Set the scale of the controller, accepted values are 's' for seconds, 'ms' for
             miliseconds, 'us' for microseconds, 'ns' for nanoscondas and 'cpu' for the highest precision
             at cpu clock. On default and on error set to seconds.
