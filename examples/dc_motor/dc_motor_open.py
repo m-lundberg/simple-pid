@@ -4,7 +4,7 @@ import utime
 import math
 from machine import Timer
 
-class DCMotor(object):
+class DCMotor:
 
     def __init__ (
     	self,

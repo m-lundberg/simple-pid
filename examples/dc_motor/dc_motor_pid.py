@@ -3,7 +3,7 @@ import math
 from control import PID
 from machine import Timer
 
-class DCMotor(object):
+class DCMotor:
 
     def __init__ (
     	self,
@@ -113,5 +113,19 @@ while utime.ticks_diff(deadline4, utime.time()) > 0:
     omega = dcmotor.sim(load, power, 32e-6)
     power = pid(omega, 32e-6)
     if ((dcmotor._last_time - last_time) > print_interval):
-    	print(dcmotor._last_time,",",omega,",",pid.setpoint,",",power)
-    	last_time = dcmotor._last_time
+    	print(dcmotor._last_time,
+
+timestep = 1e-7
+voltage = 0
+omega = 0
+last_time = 0
+pid0 = PID(33, 113675, 0.002322, setpoint=30)
+# Compute until 0.001 seconds (not realtime).
+while (dcmotor0._last_time) < 0.001:
+  omega = dcmotor0.sim(0.3,voltage,timestep)
+  voltage = pid0(omega,timestep)
+  # Print every 50 time steps.
+  if (dcmotor0._last_time) - last_time > 50 * timestep:
+    print(''.join([str(x) for x in [dcmotor0._last_time, ',', pid0.setpoint, ',', voltage, ',', omega]]))
+    last_time = dcmotor0._last_time
+

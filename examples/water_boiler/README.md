@@ -4,4 +4,4 @@ Simple simulation of a water boiler which can heat up water and where the heat d
 
 ## Installation
 
-Just upload `water_boiler.py` and `PID.py` to the board running MicroPython and then run `water_boiler.py`.
+Just upload `water_boiler_pid.py` and `PID.py` to the board running MicroPython and then run `water_boiler_pid.py`.
