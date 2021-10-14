@@ -36,7 +36,7 @@ class DCMotor:
 
     # The simulator
     def sim( self, load, va, dt):
-    	now = utime.ticks_us()
+        now = utime.ticks_us()
 
         # Set the load
         sign = math.copysign( 1, self.omega )
@@ -128,4 +128,3 @@ while (dcmotor0._last_time) < 0.001:
   if (dcmotor0._last_time) - last_time > 50 * timestep:
     print(''.join([str(x) for x in [dcmotor0._last_time, ',', pid0.setpoint, ',', voltage, ',', omega]]))
     last_time = dcmotor0._last_time
-
