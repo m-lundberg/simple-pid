@@ -1,6 +1,6 @@
 import utime
 import math
-from control import PID
+from PID import PID
 from machine import Timer
 
 class DCMotor:
