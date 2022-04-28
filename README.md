@@ -1,6 +1,6 @@
 # simple-pid
 
-[![Travis](https://travis-ci.com/m-lundberg/simple-pid.svg?branch=master)](https://travis-ci.com/m-lundberg/simple-pid)
+[![Tests](https://github.com/m-lundberg/simple-pid/actions/workflows/run-tests.yml/badge.svg)](https://github.com/m-lundberg/simple-pid/actions?query=workflow%3Atests)
 [![PyPI](https://img.shields.io/pypi/v/simple-pid.svg)](https://pypi.org/project/simple-pid/)
 [![Read the Docs](https://img.shields.io/readthedocs/simple-pid.svg)](https://simple-pid.readthedocs.io/)
 [![License](https://img.shields.io/github/license/m-lundberg/simple-pid.svg)](https://github.com/m-lundberg/simple-pid/blob/master/LICENSE.md)
