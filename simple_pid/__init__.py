@@ -1,1 +1,1 @@
-from simple_pid.PID import PID as PID
+from simple_pid.pid import PID as PID
