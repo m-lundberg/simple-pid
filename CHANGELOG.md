@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+
+- Rename the module `PID` to `pid` to avoid the shadowing from the `PID` class
+
 ### Fixed
 
 - Fix mypy issue by explicitly exporting `PID`
