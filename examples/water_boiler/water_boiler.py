@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import os
+import sys
 import time
 import matplotlib.pyplot as plt
 from simple_pid import PID
@@ -58,4 +60,7 @@ if __name__ == '__main__':
     plt.xlabel('time')
     plt.ylabel('temperature')
     plt.legend()
-    plt.show()
+    if os.getenv("NO_DISPLAY"):
+        plt.savefig(f"result-py{'.'.join([str(x) for x in sys.version_info[:2]])}.png")
+    else:
+        plt.show()
