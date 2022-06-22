@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+
+- Rename the module `PID` to `pid` to avoid the shadowing from the `PID` class
+
+### Fixed
+
+- Fix mypy issue by explicitly exporting `PID`
+- Remove duplicated definition of `output_limits` in type stubs
+
 ## [1.0.1] - 2021-04-11
 
 ### Fixed

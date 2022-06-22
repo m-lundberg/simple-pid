@@ -14,7 +14,6 @@ class PID(object):
     Kd: float
     setpoint: float
     sample_time: Optional[float]
-    output_limits: _Limits
     proportional_on_measurement: bool
     differential_on_measurement: bool
     error_map: Optional[Callable[[float], float]]
