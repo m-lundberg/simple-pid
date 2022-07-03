@@ -15,6 +15,7 @@ class PID(object):
     setpoint: float
     sample_time: Optional[float]
     proportional_on_measurement: bool
+    differential_on_measurement: bool
     error_map: Optional[Callable[[float], float]]
     def __init__(
         self,
@@ -26,6 +27,7 @@ class PID(object):
         output_limits: _Limits = ...,
         auto_mode: bool = ...,
         proportional_on_measurement: bool = ...,
+        differential_on_measurement: bool = ...,
         error_map: Optional[Callable[[float], float]] = ...,
     ) -> None: ...
     def __call__(self, input_: float, dt: Optional[float] = ...) -> Optional[float]: ...
