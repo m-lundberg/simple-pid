@@ -1,5 +1,4 @@
 import time
-import warnings
 
 
 def _clamp(value, limits):
@@ -19,7 +18,6 @@ try:
 except AttributeError:
     # time.monotonic() not available (using python < 3.3), fallback to time.time()
     _current_time = time.time
-    warnings.warn('time.monotonic() not available in python < 3.3, using time.time() as fallback')
 
 
 class PID(object):
@@ -103,16 +101,24 @@ class PID(object):
         if dt is None:
             dt = now - self._last_time if (now - self._last_time) else 1e-16
         elif dt <= 0:
-            raise ValueError('dt has negative value {}, must be positive'.format(dt))
+            raise ValueError("dt has negative value {}, must be positive".format(dt))
 
-        if self.sample_time is not None and dt < self.sample_time and self._last_output is not None:
+        if (
+            self.sample_time is not None
+            and dt < self.sample_time
+            and self._last_output is not None
+        ):
             # Only update every sample_time seconds
             return self._last_output
 
         # Compute error terms
         error = self.setpoint - input_
-        d_input = input_ - (self._last_input if (self._last_input is not None) else input_)
-        d_error = error - (self._last_error if (self._last_error is not None) else error)
+        d_input = input_ - (
+            self._last_input if (self._last_input is not None) else input_
+        )
+        d_error = error - (
+            self._last_error if (self._last_error is not None) else error
+        )
 
         # Check if must map the error
         if self.error_map is not None:
@@ -128,7 +134,9 @@ class PID(object):
 
         # Compute integral and derivative terms
         self._integral += self.Ki * error * dt
-        self._integral = _clamp(self._integral, self.output_limits)  # Avoid integral windup
+        self._integral = _clamp(
+            self._integral, self.output_limits
+        )  # Avoid integral windup
 
         if self.differetial_on_measurement:
             self._derivative = -self.Kd * d_input / dt
@@ -149,14 +157,14 @@ class PID(object):
 
     def __repr__(self):
         return (
-            '{self.__class__.__name__}('
-            'Kp={self.Kp!r}, Ki={self.Ki!r}, Kd={self.Kd!r}, '
-            'setpoint={self.setpoint!r}, sample_time={self.sample_time!r}, '
-            'output_limits={self.output_limits!r}, auto_mode={self.auto_mode!r}, '
-            'proportional_on_measurement={self.proportional_on_measurement!r}, '
-            'differetial_on_measurement={self.differetial_on_measurement!r}, '
-            'error_map={self.error_map!r}'
-            ')'
+            "{self.__class__.__name__}("
+            "Kp={self.Kp!r}, Ki={self.Ki!r}, Kd={self.Kd!r}, "
+            "setpoint={self.setpoint!r}, sample_time={self.sample_time!r}, "
+            "output_limits={self.output_limits!r}, auto_mode={self.auto_mode!r}, "
+            "proportional_on_measurement={self.proportional_on_measurement!r}, "
+            "differetial_on_measurement={self.differetial_on_measurement!r}, "
+            "error_map={self.error_map!r}"
+            ")"
         ).format(self=self)
 
     @property
@@ -229,7 +237,7 @@ class PID(object):
         min_output, max_output = limits
 
         if (None not in limits) and (max_output < min_output):
-            raise ValueError('lower limit must be less than upper limit')
+            raise ValueError("lower limit must be less than upper limit")
 
         self._min_output = min_output
         self._max_output = max_output
