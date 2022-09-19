@@ -60,7 +60,7 @@ if __name__ == '__main__':
     plt.xlabel('time')
     plt.ylabel('temperature')
     plt.legend()
-    if os.getenv("NO_DISPLAY"):
+    if os.getenv('NO_DISPLAY'):
         plt.savefig(f"result-py{'.'.join([str(x) for x in sys.version_info[:2]])}.png")
     else:
         plt.show()
