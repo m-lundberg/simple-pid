@@ -34,7 +34,7 @@ jobs:
         # interactively.
         # pip install pyqt5
 
-    - name: Run tests with pytest
+    - name: Run examples
       run: |
         cd examples/water_boiler/
         NO_DISPLAY=1 python water_boiler.py
