@@ -1,5 +1,4 @@
 import time
-import warnings
 
 
 def _clamp(value, limits):
@@ -19,7 +18,6 @@ try:
 except AttributeError:
     # time.monotonic() not available (using python < 3.3), fallback to time.time()
     _current_time = time.time
-    warnings.warn('time.monotonic() not available in python < 3.3, using time.time() as fallback')
 
 
 class PID(object):
