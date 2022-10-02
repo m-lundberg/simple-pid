@@ -121,6 +121,7 @@ def test_time_fn():
         nonlocal i
         i += 1
         return i
+
     pid.time_fn = time_function
 
     for j in range(1, 5):
