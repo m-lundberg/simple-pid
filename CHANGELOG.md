@@ -15,11 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Rename the module `PID` to `pid` to avoid the shadowing from the `PID` class
+- CI migrated from Travis to GitHub Actions
 
 ### Fixed
 
 - Fix mypy issue by explicitly exporting `PID`
 - Remove duplicated definition of `output_limits` in type stubs
+
+### Deprecated
+
+- Official support for Python 2 is dropped. While the code will likely keep working in Python 2 going forward, it's no longer tested in CI and no guarantees are given.
 
 ## [1.0.1] - 2021-04-11
 

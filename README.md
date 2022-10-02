@@ -132,7 +132,7 @@ pid.time_fn = time.ticks_us
 ## Tests
 Use the following to run tests:
 ```
-tox
+pytest -v
 ```
 
 ## License
