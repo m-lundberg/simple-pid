@@ -116,6 +116,7 @@ def test_time_fn():
         assert pid.time_fn == time.monotonic
 
     i = 0
+
     def time_function():
         nonlocal i
         i += 1
