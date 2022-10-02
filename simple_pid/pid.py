@@ -12,14 +12,6 @@ def _clamp(value, limits):
     return value
 
 
-try:
-    # Get monotonic time to ensure that time deltas are always positive
-    _current_time = time.monotonic
-except AttributeError:
-    # time.monotonic() not available (using python < 3.3), fallback to time.time()
-    _current_time = time.time
-
-
 class PID(object):
     """A simple PID controller."""
 
@@ -80,6 +72,13 @@ class PID(object):
         self._last_error = None
         self._last_input = None
 
+        try:
+            # Get monotonic time to ensure that time deltas are always positive
+            self.time_fn = time.monotonic
+        except AttributeError:
+            # time.monotonic() not available (using python < 3.3), fallback to time.time()
+            self.time_fn = time.time
+
         self.output_limits = output_limits
         self.reset()
 
@@ -97,7 +96,7 @@ class PID(object):
         if not self.auto_mode:
             return self._last_output
 
-        now = _current_time()
+        now = self.time_fn()
         if dt is None:
             dt = now - self._last_time if (now - self._last_time) else 1e-16
         elif dt <= 0:
@@ -248,6 +247,6 @@ class PID(object):
 
         self._integral = _clamp(self._integral, self.output_limits)
 
-        self._last_time = _current_time()
+        self._last_time = self.time_fn()
         self._last_output = None
         self._last_input = None

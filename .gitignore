@@ -9,6 +9,7 @@ build/
 .tox/
 *.pyc
 .idea/
+.vscode/
 .envrc
 build.sh
 total_downloads.py

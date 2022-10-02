@@ -122,6 +122,13 @@ def pi_clip(angle):
 pid.error_map = pi_clip
 ```
 
+#### Overriding time function
+By default, the PID uses `time.monotonic()` (or if not available, `time.time()` as fallback) to get the current time on each invocation. The time function can be overridden by setting `PID.time_fn` to whichever function you want to use. For example, to use the [MicroPython time.ticks_us()](https://docs.micropython.org/en/latest/library/time.html#time.ticks_us):
+```python
+import time
+pid.time_fn = time.ticks_us
+```
+
 ## Tests
 Use the following to run tests:
 ```

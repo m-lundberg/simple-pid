@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- Ability to override the time function by setting PID.time_fn to whichever function to use.
+
 ### Changed
 
 - Rename the module `PID` to `pid` to avoid the shadowing from the `PID` class
