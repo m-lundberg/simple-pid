@@ -107,12 +107,13 @@ def test_sample_time():
 
 
 def test_monotonic():
-    from simple_pid.pid import _current_time
+    # Default time function should be time.monotonic, or time.time in older versions of Python
+    pid = PID()
 
     if sys.version_info < (3, 3):
-        assert _current_time == time.time
+        assert pid.time_fn == time.time
     else:
-        assert _current_time == time.monotonic
+        assert pid.time_fn == time.monotonic
 
 
 def test_auto_mode():
@@ -134,12 +135,10 @@ def test_auto_mode():
     assert pid(8) == 2
 
     # Last update time should be reset to avoid huge dt
-    from simple_pid.pid import _current_time
-
     pid.auto_mode = False
     time.sleep(1)
     pid.auto_mode = True
-    assert _current_time() - pid._last_time < 0.01
+    assert pid.time_fn() - pid._last_time < 0.01
 
     # Check that setting last_output works
     pid.auto_mode = False

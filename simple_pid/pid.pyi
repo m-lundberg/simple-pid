@@ -6,8 +6,6 @@ _Tunings = Tuple[float, float, float]
 
 def _clamp(value: Optional[float], limits: _Limits) -> Optional[float]: ...
 
-_current_time: Callable[[], float]
-
 class PID(object):
     Kp: float
     Ki: float
@@ -17,6 +15,7 @@ class PID(object):
     proportional_on_measurement: bool
     differential_on_measurement: bool
     error_map: Optional[Callable[[float], float]]
+    time_fn: Callable[[], float]
     def __init__(
         self,
         Kp: float = ...,
