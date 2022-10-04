@@ -21,7 +21,7 @@ classifiers = [
 
 [project.optional-dependencies]
 test = ["pytest"]
-doc = ["m2r", "sphinx-rtd-theme"]
+doc = ["m2r2", "sphinx-rtd-theme"]
 
 [build-system]
 requires = ["setuptools"]

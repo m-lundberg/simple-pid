@@ -20,13 +20,13 @@ sys.path.insert(0, os.path.abspath('../../'))
 # -- Project information -----------------------------------------------------
 
 project = 'simple-pid'
-copyright = '2018, Martin Lundberg'
+copyright = '2018-2022, Martin Lundberg'
 author = 'Martin Lundberg'
 
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-release = '0.1'
+release = '1.0.1'
 
 
 # -- General configuration ---------------------------------------------------
@@ -41,7 +41,7 @@ release = '0.1'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
-    'm2r',
+    'm2r2',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
