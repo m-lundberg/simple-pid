@@ -1,0 +1,38 @@
+[project]
+name = "simple-pid"
+version = "1.0.1"
+authors = [
+  { name="Martin Lundberg" },
+]
+description = "A simple, easy to use PID controller"
+readme = "README.md"
+requires-python = ">=3.6"
+keywords = ["pid", "controller", "control"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/m-lundberg/simple-pid"
+"Documentation" = "https://simple-pid.readthedocs.io/"
+
+[project.optional-dependencies]
+test = ["pytest"]
+doc = ["m2r", "sphinx-rtd-theme"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["simple_pid"]
+exclude = ["tests"]
+
+[tool.black]
+line-length = 100
+skip-string-normalization = true
+target-version = ["py39", "py38", "py37", "py36"]
+extend-exclude = 'docs/'
