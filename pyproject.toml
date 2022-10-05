@@ -22,6 +22,7 @@ classifiers = [
 [project.optional-dependencies]
 test = ["pytest"]
 doc = ["m2r2", "sphinx-rtd-theme"]
+examples = ["numpy", "matplotlib"]
 
 [build-system]
 requires = ["setuptools"]

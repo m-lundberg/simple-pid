@@ -4,24 +4,29 @@ Simple simulation of a water boiler which can heat up water and where the heat d
 
 ## Installation
 
-Optionally, create a virtual environment for this example and activate it.
+It's recommended to install the dependencies (numpy and matplotlib, in addition to the simple-pid library itself) in a virtual environment.
 
 ```bash
-python -m venv water_boiler_venv  # Assuming Python 3
-. water_boiler_venv/bin/activate
+# Linux:
+python -m venv venv
+. venv/bin/activate
+
+# Windows:
+python -m venv venv
+venv/Scripts/activate
 ```
 
 Then install the example dependencies:
 
 ```bash
-pip install -r requirements.txt
+python -m pip install ../..[examples]
 ```
 
 ## Usage
 
 ```bash
 # Activate the virtual environment if you use one:
-. water_boiler_venv/bin/activate
+. venv/bin/activate
 
 # Run the example:
 python water_boiler.py

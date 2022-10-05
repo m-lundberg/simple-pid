@@ -61,6 +61,7 @@ if __name__ == '__main__':
     plt.ylabel('temperature')
     plt.legend()
     if os.getenv('NO_DISPLAY'):
+        # If run in CI the plot is saved to file instead of shown to the user
         plt.savefig(f"result-py{'.'.join([str(x) for x in sys.version_info[:2]])}.png")
     else:
         plt.show()
