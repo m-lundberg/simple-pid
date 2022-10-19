@@ -101,9 +101,9 @@ class PID(object):
             return self._last_output
    
         if self.variable_sample_time:
-            kp = self.kp/dt
+            kp = self.kp
             ki = self.ki/dt
-            kd = self.kd/dt
+            kd = self.kd*dt
         else:
             kp = self.kp
             ki = self.ki
