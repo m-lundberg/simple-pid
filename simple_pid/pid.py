@@ -27,6 +27,7 @@ class PID(object):
         proportional_on_measurement=False,
         differetial_on_measurement=True,
         error_map=None,
+        variable_sample_time=False,
     ):
         """
         Initialize a new PID controller.
@@ -52,6 +53,8 @@ class PID(object):
         :param differetial_on_measurement: Whether the differential term should be calculated on
             the input directly rather than on the error (which is the traditional way).
         :param error_map: Function to transform the error value in another constrained value.
+        :param variable_sample_time: Whether the controller should maintain relative controller gains
+            based on the current sample_time.
         """
         self.Kp, self.Ki, self.Kd = Kp, Ki, Kd
         self.setpoint = setpoint
@@ -62,6 +65,7 @@ class PID(object):
         self.proportional_on_measurement = proportional_on_measurement
         self.differetial_on_measurement = differetial_on_measurement
         self.error_map = error_map
+        self.variable_sample_time = variable_sample_time
 
         self._proportional = 0
         self._integral = 0
@@ -95,7 +99,16 @@ class PID(object):
         """
         if not self.auto_mode:
             return self._last_output
-
+   
+        if self.variable_sample_time:
+            kp = self.kp/dt
+            ki = self.ki/dt
+            kd = self.kd/dt
+        else:
+            kp = self.kp
+            ki = self.ki
+            kd = self.kd
+        
         now = self.time_fn()
         if dt is None:
             dt = now - self._last_time if (now - self._last_time) else 1e-16
@@ -118,19 +131,19 @@ class PID(object):
         # Compute the proportional term
         if not self.proportional_on_measurement:
             # Regular proportional-on-error, simply set the proportional term
-            self._proportional = self.Kp * error
+            self._proportional = Kp * error
         else:
             # Add the proportional error on measurement to error_sum
-            self._proportional -= self.Kp * d_input
+            self._proportional -= Kp * d_input
 
         # Compute integral and derivative terms
-        self._integral += self.Ki * error * dt
+        self._integral += Ki * error * dt
         self._integral = _clamp(self._integral, self.output_limits)  # Avoid integral windup
 
         if self.differetial_on_measurement:
-            self._derivative = -self.Kd * d_input / dt
+            self._derivative -= Kd * d_input / dt
         else:
-            self._derivative = self.Kd * d_error / dt
+            self._derivative = Kd * d_error / dt
 
         # Compute final output
         output = self._proportional + self._integral + self._derivative
