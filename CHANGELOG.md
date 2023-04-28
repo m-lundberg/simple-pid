@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Rename the module `PID` to `pid` to avoid the shadowing from the `PID` class
 - CI migrated from Travis to GitHub Actions
+- The [documentation](https://simple-pid.readthedocs.io/) has gotten an overhaul and a new look. Much of the detailed documentation in README.md has been moved to a dedicated user guide.
 
 ### Fixed
 

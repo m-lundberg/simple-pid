@@ -5,7 +5,7 @@ include README.md
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
 
-recursive-include docs *.rst conf.py Makefile requirements.txt
+recursive-include docs *.rst *.md conf.py requirements.txt
 recursive-include examples *.md *.txt *.py
 recursive-include tests *.py
 

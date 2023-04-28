@@ -1,2 +1,4 @@
-m2r2
-sphinx-rtd-theme
+furo==2023.3.27
+myst-parser==1.0.0
+sphinx==6.2.1
+sphinx-copybutton==0.5.2

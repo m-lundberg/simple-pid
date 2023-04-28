@@ -2,7 +2,7 @@
 name = "simple-pid"
 version = "1.0.1"
 authors = [
-  { name="Martin Lundberg" },
+    { name="Martin Lundberg" },
 ]
 description = "A simple, easy to use PID controller"
 readme = "README.md"
@@ -21,7 +21,12 @@ classifiers = [
 
 [project.optional-dependencies]
 test = ["pytest"]
-doc = ["m2r2", "sphinx-rtd-theme"]
+doc = [
+    "furo==2023.3.27",
+    "myst-parser==1.0.0",
+    "sphinx==6.2.1",
+    "sphinx-copybutton==0.5.2",
+]
 examples = ["numpy", "matplotlib"]
 
 [build-system]
