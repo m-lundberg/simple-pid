@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Black is now run in CI to detect formatting problems
 - Project is now defined by a pyproject.toml file instead of the old setup.py. The setup.cfg file remains for flake8 configuration for now.
 - Ability to give the PID a starting guess for its output, when you start controlling a system that is already at the setpoint and don't want the PID to start outputting 0
+- Option for specifying differential_on_measurement, to choose between calculating the derivative term on the input (default) or on the error (classic PID)
 
 ### Changed
 
