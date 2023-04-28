@@ -134,6 +134,7 @@ def test_time_fn():
 def test_time_fn_notime():
     # Deliberately prevent the time module from being imported
     import sys
+
     sys.modules['time'] = None
 
     with pytest.raises(ModuleNotFoundError):
