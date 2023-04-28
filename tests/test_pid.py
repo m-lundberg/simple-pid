@@ -148,6 +148,13 @@ def test_time_fn_notime():
     sys.modules['time'] = time
 
 
+def test_starting_output():
+    # If the PID is started with a system already at the setpoint, we can give it our best guess
+    # for which output it should start at
+    pid = PID(1, 0, 0, setpoint=10, starting_output=25)
+    assert pid(10) == 25
+
+
 def test_auto_mode():
     pid = PID(1, 0, 0, setpoint=10, sample_time=None)
 

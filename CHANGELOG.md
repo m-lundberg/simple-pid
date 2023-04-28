@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ability to override the time function by setting PID.time_fn to whichever function to use
 - Black is now run in CI to detect formatting problems
 - Project is now defined by a pyproject.toml file instead of the old setup.py. The setup.cfg file remains for flake8 configuration for now.
+- Ability to give the PID a starting guess for its output, when you start controlling a system that is already at the setpoint and don't want the PID to start outputting 0
 
 ### Changed
 

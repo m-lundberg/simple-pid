@@ -25,6 +25,7 @@ class PID(object):
         differetial_on_measurement=True,
         error_map=None,
         time_fn=None,
+        starting_output=0.0,
     ):
         """
         Initialize a new PID controller.
@@ -54,6 +55,10 @@ class PID(object):
             default. This should be a function taking no arguments and returning a number
             representing the current time. The default is to use time.monotonic() if available,
             otherwise time.time().
+        :param starting_output: The starting point for the PID's output. If you start controlling
+            a system that is already at the setpoint, you can set this to your best guess at what
+            output the PID should give when first calling it to avoid the PID outputting zero and
+            moving the system away from the setpoint.
         """
         self.Kp, self.Ki, self.Kd = Kp, Ki, Kd
         self.setpoint = setpoint
@@ -89,6 +94,9 @@ class PID(object):
 
         self.output_limits = output_limits
         self.reset()
+
+        # Set initial state of the controller
+        self._integral = _clamp(starting_output, output_limits)
 
     def __call__(self, input_, dt=None):
         """
