@@ -1,6 +1,3 @@
-import time
-
-
 def _clamp(value, limits):
     lower, upper = limits
     if value is None:
@@ -27,6 +24,7 @@ class PID(object):
         proportional_on_measurement=False,
         differetial_on_measurement=True,
         error_map=None,
+        time_fn=None,
     ):
         """
         Initialize a new PID controller.
@@ -52,6 +50,10 @@ class PID(object):
         :param differetial_on_measurement: Whether the differential term should be calculated on
             the input directly rather than on the error (which is the traditional way).
         :param error_map: Function to transform the error value in another constrained value.
+        :param time_fn: The function to use for getting the current time, or None to use the
+            default. This should be a function taking no arguments and returning a number
+            representing the current time. The default is to use time.monotonic() if available,
+            otherwise time.time().
         """
         self.Kp, self.Ki, self.Kd = Kp, Ki, Kd
         self.setpoint = setpoint
@@ -72,12 +74,18 @@ class PID(object):
         self._last_error = None
         self._last_input = None
 
-        try:
-            # Get monotonic time to ensure that time deltas are always positive
-            self.time_fn = time.monotonic
-        except AttributeError:
-            # time.monotonic() not available (using python < 3.3), fallback to time.time()
-            self.time_fn = time.time
+        if time_fn is not None:
+            # Use the user supplied time function
+            self.time_fn = time_fn
+        else:
+            import time
+
+            try:
+                # Get monotonic time to ensure that time deltas are always positive
+                self.time_fn = time.monotonic
+            except AttributeError:
+                # time.monotonic() not available (using python < 3.3), fallback to time.time()
+                self.time_fn = time.time
 
         self.output_limits = output_limits
         self.reset()

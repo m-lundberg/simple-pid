@@ -1,5 +1,6 @@
 import sys
 import time
+import pytest
 from simple_pid import PID
 
 
@@ -128,6 +129,22 @@ def test_time_fn():
         # Call pid a few times and verify that the time function above was used
         pid(0)
         assert pid._last_time == j
+
+
+def test_time_fn_notime():
+    # Deliberately prevent the time module from being imported
+    import sys
+    sys.modules['time'] = None
+
+    with pytest.raises(ModuleNotFoundError):
+        # Must specify a time_fn if time is not available
+        _ = PID()
+
+    # We can still create a PID if we specify our own time_fn
+    _ = PID(time_fn=lambda: 0)
+
+    # Restore time module so the following tests can use it
+    sys.modules['time'] = time
 
 
 def test_auto_mode():
