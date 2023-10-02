@@ -12,6 +12,8 @@ def _clamp(value, limits):
 class PID(object):
     """A simple PID controller."""
 
+    MIN_DT = 1e-16
+
     def __init__(
         self,
         Kp=1.0,
@@ -114,11 +116,15 @@ class PID(object):
 
         now = self.time_fn()
         if dt is None:
-            dt = now - self._last_time if (now - self._last_time) else 1e-16
+            dt = now - self._last_time if (now - self._last_time) else PID.MIN_DT
         elif dt <= 0:
             raise ValueError('dt has negative value {}, must be positive'.format(dt))
 
-        if self.sample_time is not None and dt < self.sample_time and self._last_output is not None:
+        if (
+            self.sample_time is not None
+            and dt < self.sample_time - PID.MIN_DT
+            and self._last_output is not None
+        ):
             # Only update every sample_time seconds
             return self._last_output
 
