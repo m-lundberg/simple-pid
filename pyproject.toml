@@ -20,7 +20,10 @@ classifiers = [
 "Documentation" = "https://simple-pid.readthedocs.io/"
 
 [project.optional-dependencies]
-test = ["pytest"]
+test = [
+    "pytest",
+    "stime",
+]
 doc = [
     "furo==2023.3.27",
     "myst-parser==1.0.0",

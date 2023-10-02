@@ -1,5 +1,6 @@
 import sys
 import time
+import stime
 import pytest
 from simple_pid import PID
 
@@ -25,59 +26,63 @@ def test_P_negative_setpoint():
 
 
 def test_I():
-    pid = PID(0, 10, 0, setpoint=10, sample_time=0.1)
-    time.sleep(0.1)
+    stime.reset(0)
+    pid = PID(0, 10, 0, setpoint=10, sample_time=0.1, time_fn=stime.monotonic)
+    stime.tick(0.1)
 
     assert round(pid(0)) == 10.0  # Make sure we are close to expected value
-    time.sleep(0.1)
+    stime.tick(0.1)
 
     assert round(pid(0)) == 20.0
 
 
 def test_I_negative_setpoint():
-    pid = PID(0, 10, 0, setpoint=-10, sample_time=0.1)
-    time.sleep(0.1)
+    stime.reset(0)
+    pid = PID(0, 10, 0, setpoint=-10, sample_time=0.1, time_fn=stime.monotonic)
+    stime.tick(0.1)
 
     assert round(pid(0)) == -10.0
-    time.sleep(0.1)
+    stime.tick(0.1)
 
     assert round(pid(0)) == -20.0
 
 
 def test_D():
-    pid = PID(0, 0, 0.1, setpoint=10, sample_time=0.1)
+    stime.reset(0)
+    pid = PID(0, 0, 0.1, setpoint=10, sample_time=0.1, time_fn=stime.monotonic)
 
     # Should not compute derivative when there is no previous input (don't assume 0 as first input)
     assert pid(0) == 0
-    time.sleep(0.1)
+    stime.tick(0.1)
 
     # Derivative is 0 when input is the same
     assert pid(0) == 0
     assert pid(0) == 0
-    time.sleep(0.1)
+    stime.tick(0.1)
 
     assert round(pid(5)) == -5
-    time.sleep(0.1)
+    stime.tick(0.1)
     assert round(pid(15)) == -10
 
 
 def test_D_negative_setpoint():
-    pid = PID(0, 0, 0.1, setpoint=-10, sample_time=0.1)
-    time.sleep(0.1)
+    stime.reset(0)
+    pid = PID(0, 0, 0.1, setpoint=-10, sample_time=0.1, time_fn=stime.monotonic)
+    stime.tick(0.1)
 
     # Should not compute derivative when there is no previous input (don't assume 0 as first input)
     assert pid(0) == 0
-    time.sleep(0.1)
+    stime.tick(0.1)
 
     # Derivative is 0 when input is the same
     assert pid(0) == 0
     assert pid(0) == 0
-    time.sleep(0.1)
+    stime.tick(0.1)
 
     assert round(pid(5)) == -5
-    time.sleep(0.1)
+    stime.tick(0.1)
     assert round(pid(-5)) == 10
-    time.sleep(0.1)
+    stime.tick(0.1)
     assert round(pid(-15)) == 10
 
 
@@ -89,11 +94,14 @@ def test_desired_state():
 
 
 def test_output_limits():
-    pid = PID(100, 20, 40, setpoint=10, output_limits=(0, 100), sample_time=None)
-    time.sleep(0.1)
+    stime.reset(0)
+    pid = PID(
+        100, 20, 40, setpoint=10, output_limits=(0, 100), sample_time=None, time_fn=stime.monotonic
+    )
+    stime.tick(0.1)
 
     assert 0 <= pid(0) <= 100
-    time.sleep(0.1)
+    stime.tick(0.1)
 
     assert 0 <= pid(-100) <= 100
 
@@ -156,7 +164,8 @@ def test_starting_output():
 
 
 def test_auto_mode():
-    pid = PID(1, 0, 0, setpoint=10, sample_time=None)
+    stime.reset(0)
+    pid = PID(1, 0, 0, setpoint=10, sample_time=None, time_fn=stime.monotonic)
 
     # Ensure updates happen by default
     assert pid(0) == 10
@@ -175,7 +184,7 @@ def test_auto_mode():
 
     # Last update time should be reset to avoid huge dt
     pid.auto_mode = False
-    time.sleep(1)
+    stime.tick(1)
     pid.auto_mode = True
     assert pid.time_fn() - pid._last_time < 0.01
 
@@ -186,11 +195,12 @@ def test_auto_mode():
 
 
 def test_separate_components():
-    pid = PID(1, 0, 1, setpoint=10, sample_time=0.1)
+    stime.reset(0)
+    pid = PID(1, 0, 1, setpoint=10, sample_time=0.1, time_fn=stime.monotonic)
 
     assert pid(0) == 10
     assert pid.components == (10, 0, 0)
-    time.sleep(0.1)
+    stime.tick(0.1)
 
     assert round(pid(5)) == -45
     assert tuple(round(term) for term in pid.components) == (5, 0, -50)
@@ -236,46 +246,54 @@ def test_repr():
 
 
 def test_converge_system():
-    TIME_TO_CONVERGE = 12
-
-    pid = PID(1, 0.8, 0.04, setpoint=5, output_limits=(-5, 5))
+    stime.reset(0)
+    pid = PID(1, 0.8, 0.04, setpoint=5, output_limits=(-5, 5), time_fn=stime.monotonic)
     pv = 0  # Process variable
 
     def update_system(c, dt):
         # Calculate a simple system model
         return pv + c * dt - 1 * dt
 
-    start_time = time.time()
+    start_time = stime.time()
     last_time = start_time
 
-    while time.time() - start_time < TIME_TO_CONVERGE:
+    for _ in range(5):
+        stime.tick()
         c = pid(pv)
-        pv = update_system(c, time.time() - last_time)
+        pv = update_system(c, stime.time() - last_time)
 
-        last_time = time.time()
+        last_time = stime.time()
 
     # Check if system has converged
     assert abs(pv - 5) < 0.1
 
 
 def test_converge_diff_on_error():
-    TIME_TO_CONVERGE = 12
-
-    pid = PID(1, 0.8, 0.04, setpoint=5, output_limits=(-5, 5), differential_on_measurement=False)
+    stime.reset(0)
+    pid = PID(
+        1,
+        0.8,
+        0.04,
+        setpoint=5,
+        output_limits=(-5, 5),
+        differential_on_measurement=False,
+        time_fn=stime.monotonic,
+    )
     pv = 0  # Process variable
 
     def update_system(c, dt):
         # Calculate a simple system model
         return pv + c * dt - 1 * dt
 
-    start_time = time.time()
+    start_time = stime.time()
     last_time = start_time
 
-    while time.time() - start_time < TIME_TO_CONVERGE:
+    for _ in range(5):
+        stime.tick()
         c = pid(pv)
-        pv = update_system(c, time.time() - last_time)
+        pv = update_system(c, stime.time() - last_time)
 
-        last_time = time.time()
+        last_time = stime.time()
 
     # Check if system has converged
     assert abs(pv - 5) < 0.1
