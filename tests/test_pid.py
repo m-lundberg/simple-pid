@@ -236,6 +236,8 @@ def test_repr():
 
 
 def test_converge_system():
+    TIME_TO_CONVERGE = 12
+
     pid = PID(1, 0.8, 0.04, setpoint=5, output_limits=(-5, 5))
     pv = 0  # Process variable
 
@@ -246,7 +248,7 @@ def test_converge_system():
     start_time = time.time()
     last_time = start_time
 
-    while time.time() - start_time < 120:
+    while time.time() - start_time < TIME_TO_CONVERGE:
         c = pid(pv)
         pv = update_system(c, time.time() - last_time)
 
@@ -257,6 +259,8 @@ def test_converge_system():
 
 
 def test_converge_diff_on_error():
+    TIME_TO_CONVERGE = 12
+
     pid = PID(1, 0.8, 0.04, setpoint=5, output_limits=(-5, 5), differential_on_measurement=False)
     pv = 0  # Process variable
 
@@ -267,7 +271,7 @@ def test_converge_diff_on_error():
     start_time = time.time()
     last_time = start_time
 
-    while time.time() - start_time < 12:
+    while time.time() - start_time < TIME_TO_CONVERGE:
         c = pid(pv)
         pv = update_system(c, time.time() - last_time)
 
