@@ -9,7 +9,7 @@ def _clamp(value, limits):
     return value
 
 
-class PID(object):
+class PID:
     """A simple PID controller."""
 
     def __init__(
