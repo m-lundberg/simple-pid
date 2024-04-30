@@ -114,7 +114,7 @@ class PID:
 
         now = self.time_fn()
         if dt is None:
-            dt = now - self._last_time if (now - self._last_time) else 1e-16
+            dt = (now - self._last_time) or 1e-16
         elif dt <= 0:
             raise ValueError('dt has negative value {}, must be positive'.format(dt))
 
