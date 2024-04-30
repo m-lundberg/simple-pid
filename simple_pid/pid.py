@@ -116,7 +116,8 @@ class PID:
         if dt is None:
             dt = (now - self._last_time) or 1e-16
         elif dt <= 0:
-            raise ValueError(f'dt has negative value {dt}, must be positive')
+            msg = f'dt has negative value {dt}, must be positive'
+            raise ValueError(msg)
 
         if self.sample_time is not None and dt < self.sample_time and self._last_output is not None:
             # Only update every sample_time seconds
@@ -242,7 +243,8 @@ class PID:
         min_output, max_output = limits
 
         if (None not in limits) and (max_output < min_output):
-            raise ValueError('lower limit must be less than upper limit')
+            msg = 'lower limit must be less than upper limit'
+            raise ValueError(msg)
 
         self._min_output = min_output
         self._max_output = max_output
