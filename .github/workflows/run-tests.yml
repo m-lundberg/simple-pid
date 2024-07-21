@@ -38,7 +38,7 @@ jobs:
     - name: Lint with flake8
       run: |
         python -m flake8 . --count --statistics
-    
+
     - name: Run mypy
       run: |
         python -m mypy --strict simple_pid
