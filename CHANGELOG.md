@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed
+
+- Fix issue where the last error was not reset when calling reset()
+
 ## [2.0.0] - 2023-04-28
 
 ### Added
