@@ -1,6 +1,6 @@
 [project]
 name = "simple-pid"
-version = "2.0.0"
+version = "2.0.1"
 authors = [
     { name="Martin Lundberg" },
 ]
