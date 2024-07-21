@@ -43,7 +43,7 @@ if __name__ == '__main__':
         current_time = time.time()
         dt = current_time - last_time
 
-        power = pid(water_temp, dt)
+        power = pid(water_temp)
         water_temp = boiler.update(power, dt)
 
         x += [current_time - start_time]
