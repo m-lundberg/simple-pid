@@ -9,7 +9,7 @@ def _clamp(value, limits):
     return value
 
 
-class PID(object):
+class PID:
     """A simple PID controller."""
 
     def __init__(
@@ -114,9 +114,10 @@ class PID(object):
 
         now = self.time_fn()
         if dt is None:
-            dt = now - self._last_time if (now - self._last_time) else 1e-16
+            dt = (now - self._last_time) or 1e-16
         elif dt <= 0:
-            raise ValueError('dt has negative value {}, must be positive'.format(dt))
+            msg = f'dt has negative value {dt}, must be positive'
+            raise ValueError(msg)
 
         if self.sample_time is not None and dt < self.sample_time and self._last_output is not None:
             # Only update every sample_time seconds
@@ -162,15 +163,15 @@ class PID(object):
 
     def __repr__(self):
         return (
-            '{self.__class__.__name__}('
-            'Kp={self.Kp!r}, Ki={self.Ki!r}, Kd={self.Kd!r}, '
-            'setpoint={self.setpoint!r}, sample_time={self.sample_time!r}, '
-            'output_limits={self.output_limits!r}, auto_mode={self.auto_mode!r}, '
-            'proportional_on_measurement={self.proportional_on_measurement!r}, '
-            'differential_on_measurement={self.differential_on_measurement!r}, '
-            'error_map={self.error_map!r}'
+            f'{self.__class__.__name__}('
+            f'Kp={self.Kp!r}, Ki={self.Ki!r}, Kd={self.Kd!r}, '
+            f'setpoint={self.setpoint!r}, sample_time={self.sample_time!r}, '
+            f'output_limits={self.output_limits!r}, auto_mode={self.auto_mode!r}, '
+            f'proportional_on_measurement={self.proportional_on_measurement!r}, '
+            f'differential_on_measurement={self.differential_on_measurement!r}, '
+            f'error_map={self.error_map!r}'
             ')'
-        ).format(self=self)
+        )
 
     @property
     def components(self):
@@ -242,7 +243,8 @@ class PID(object):
         min_output, max_output = limits
 
         if (None not in limits) and (max_output < min_output):
-            raise ValueError('lower limit must be less than upper limit')
+            msg = 'lower limit must be less than upper limit'
+            raise ValueError(msg)
 
         self._min_output = min_output
         self._max_output = max_output

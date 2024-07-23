@@ -1,20 +1,22 @@
-from typing import Callable, Optional, Tuple
+from typing import Callable, Optional
 
-_Limits = Tuple[Optional[float], Optional[float]]
-_Components = Tuple[float, float, float]
-_Tunings = Tuple[float, float, float]
+import typing_extensions
 
-def _clamp(value: Optional[float], limits: _Limits) -> Optional[float]: ...
+_Limits: typing_extensions.TypeAlias = tuple[float | None, float | None]
+_Components: typing_extensions.TypeAlias = tuple[float, float, float]
+_Tunings: typing_extensions.TypeAlias = tuple[float, float, float]
 
-class PID(object):
+def _clamp(value: float | None, limits: _Limits) -> float | None: ...
+
+class PID:
     Kp: float
     Ki: float
     Kd: float
     setpoint: float
-    sample_time: Optional[float]
+    sample_time: float | None
     proportional_on_measurement: bool
     differential_on_measurement: bool
-    error_map: Optional[Callable[[float], float]]
+    error_map: Callable[[float], float] | None
     time_fn: Callable[[], float]
     def __init__(
         self,
@@ -22,16 +24,16 @@ class PID(object):
         Ki: float = ...,
         Kd: float = ...,
         setpoint: float = ...,
-        sample_time: Optional[float] = ...,
+        sample_time: float | None = ...,
         output_limits: _Limits = ...,
         auto_mode: bool = ...,
         proportional_on_measurement: bool = ...,
         differential_on_measurement: bool = ...,
-        error_map: Optional[Callable[[float], float]] = ...,
-        time_fn: Optional[Callable[[], float]] = ...,
+        error_map: Callable[[float], float] | None = ...,
+        time_fn: Callable[[], float] | None = ...,
         starting_output: float = ...,
     ) -> None: ...
-    def __call__(self, input_: float, dt: Optional[float] = ...) -> Optional[float]: ...
+    def __call__(self, input_: float, dt: float | None = ...) -> float | None: ...
     def __repr__(self) -> str: ...
     @property
     def components(self) -> _Components: ...
@@ -43,7 +45,7 @@ class PID(object):
     def auto_mode(self) -> bool: ...
     @auto_mode.setter
     def auto_mode(self, enabled: bool) -> None: ...
-    def set_auto_mode(self, enabled: bool, last_output: Optional[float] = ...) -> None: ...
+    def set_auto_mode(self, enabled: bool, last_output: float | None = ...) -> None: ...
     @property
     def output_limits(self) -> _Limits: ...
     @output_limits.setter
