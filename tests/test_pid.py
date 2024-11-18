@@ -296,3 +296,18 @@ def test_error_map():
 
     # Check if error value is mapped by the function
     assert pid(pv) == pi_clip(sp - pv)
+
+
+def test_feedforward():
+    pid = PID(1, 0, 0, setpoint=0)
+    
+    # Ensure feed forward starts disabled
+    assert pid.feed_forward_enabled == False
+    
+    pid.feed_forward_enabled = True
+    pid.feed_forward = 20.0
+    
+    # Ensure feed forward is enabled and with the desire value
+    assert pid.feed_forward_enabled == True
+    assert pid.feed_forward == 20.0
+    assert pid(0) == 20.0

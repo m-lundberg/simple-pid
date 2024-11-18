@@ -26,6 +26,8 @@ class PID(object):
         error_map=None,
         time_fn=None,
         starting_output=0.0,
+        feed_forward=0.0,
+        feed_forward_enabled=False
     ):
         """
         Initialize a new PID controller.
@@ -69,6 +71,9 @@ class PID(object):
         self.proportional_on_measurement = proportional_on_measurement
         self.differential_on_measurement = differential_on_measurement
         self.error_map = error_map
+
+        self.feed_forward = feed_forward
+        self._feed_forward_enabled = feed_forward_enabled
 
         self._proportional = 0
         self._integral = 0
@@ -150,6 +155,11 @@ class PID(object):
 
         # Compute final output
         output = self._proportional + self._integral + self._derivative
+        
+        # Add feed-forward term if enabled
+        if self.feed_forward_enabled:
+            output += self.feed_forward
+
         output = _clamp(output, self.output_limits)
 
         # Keep track of state
@@ -190,6 +200,16 @@ class PID(object):
         """Set the PID tunings."""
         self.Kp, self.Ki, self.Kd = tunings
 
+    @property
+    def feed_forward_enabled(self):
+        """Whether the feed forward term is currently enabled or not."""
+        return self._feed_forward_enabled
+    
+    @feed_forward_enabled.setter
+    def feed_forward_enabled(self, enabled:bool):
+        """Enable or disable the feed forward."""
+        self._feed_forward_enabled = enabled
+    
     @property
     def auto_mode(self):
         """Whether the controller is currently enabled (in auto mode) or not."""

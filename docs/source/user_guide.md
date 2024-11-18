@@ -154,3 +154,21 @@ By default, the PID uses `time.monotonic()` (or if not available, `time.time()` 
 import time
 pid.time_fn = time.ticks_us
 ```
+
+
+### Feed-forward
+
+By default, the feed-forward term is disable.
+
+Enable or disable feed-forward as needed:
+
+```python
+pid.feed_forward_enabled = False  # Feed-forward compensation is disabled, output is PID only
+pid.feed_forward_enabled = True   # Feed-forward compensation is enabled, added to PID output
+```
+
+Change the feed-forward term example
+```python
+pid.feed_forward = 20.0 # Predictable setpoint 
+```
+
