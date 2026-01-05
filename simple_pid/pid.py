@@ -1,4 +1,12 @@
 def _clamp(value, limits):
+    """
+    Clamp a value within given limits.
+
+    :param value: The numeric value to clamp.
+    :param limits: A 2-element iterable (lower, upper) defining the allowed range.
+                   Either limit can be None to indicate no bound in that direction.
+    :return: The value if it is within the limits, otherwise the nearest limit.
+    """
     lower, upper = limits
     if value is None:
         return None
@@ -161,6 +169,14 @@ class PID(object):
         return output
 
     def __repr__(self):
+        """
+        Return a detailed string representation of the PID controller.
+
+        This includes all tunings, setpoint, sample time, output limits, and flags
+        for auto mode, proportional-on-measurement, differential-on-measurement,
+        and any custom error mapping function. Useful for debugging or logging the
+        current configuration of the controller.
+        """
         return (
             '{self.__class__.__name__}('
             'Kp={self.Kp!r}, Ki={self.Ki!r}, Kd={self.Kd!r}, '
@@ -252,10 +268,13 @@ class PID(object):
 
     def reset(self):
         """
-        Reset the PID controller internals.
+        Reset the PID controller internals to initial state.
 
-        This sets each term to 0 as well as clearing the integral, the last output and the last
-        input (derivative calculation).
+        This method sets the proportional, integral, and derivative terms to zero and
+        clears the last output, last input, and last error. It also clamps the integral
+        term to the current output limits to prevent windup when the controller is restarted.
+
+        After calling this, the PID is effectively restarted as if it were just created.
         """
         self._proportional = 0
         self._integral = 0
