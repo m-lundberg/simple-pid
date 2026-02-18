@@ -141,7 +141,6 @@ class PID(object):
 
         # Compute integral and derivative terms
         self._integral += self.Ki * error * dt
-        self._integral = _clamp(self._integral, self.output_limits)  # Avoid integral windup
 
         if self.differential_on_measurement:
             self._derivative = -self.Kd * d_input / dt
@@ -151,6 +150,7 @@ class PID(object):
         # Compute final output
         output = self._proportional + self._integral + self._derivative
         output = _clamp(output, self.output_limits)
+        self._integral = output - (self._proportional + self._derivative)
 
         # Keep track of state
         self._last_output = output
@@ -246,9 +246,13 @@ class PID(object):
 
         self._min_output = min_output
         self._max_output = max_output
-
-        self._integral = _clamp(self._integral, self.output_limits)
+        
         self._last_output = _clamp(self._last_output, self.output_limits)
+        if (self._proportional is None) or (self._derivative is None) or (self._last_output is None):
+            self._integral = _clamp(self._integral, self.output_limits)
+        else:
+            self._integral = self._last_output - (self._proportional + self._derivative)
+        
 
     def reset(self):
         """
