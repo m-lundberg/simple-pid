@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Ignore non-finite process measurements so NaN/inf sensor readings cannot poison the integral term or produce a non-finite control output (#92)
+
+
 ## [2.0.1] - 2024-07-21
 
 ### Fixed

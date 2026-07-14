@@ -1,3 +1,4 @@
+import math
 import sys
 import time
 import pytest
@@ -278,7 +279,6 @@ def test_converge_diff_on_error():
 
 
 def test_error_map():
-    import math
 
     def pi_clip(angle):
         """Transform the angle value to a [-pi, pi) range."""
@@ -296,3 +296,41 @@ def test_error_map():
 
     # Check if error value is mapped by the function
     assert pid(pv) == pi_clip(sp - pv)
+
+
+def test_nan_input_does_not_poison_state():
+    pid = PID(1, 1, 0, setpoint=10, sample_time=None, output_limits=(0, 100))
+    good = pid(0)
+    assert good is not None
+    assert math.isfinite(good)
+
+    # Bad samples must not change components or last output
+    before = pid.components
+    assert pid(float("nan")) == good
+    assert pid.components == before
+    assert pid(float("inf")) == good
+    assert pid.components == before
+
+    # Recovery with a finite measurement
+    after = pid(0)
+    assert after is not None
+    assert math.isfinite(after)
+
+
+def test_nan_input_before_any_output_returns_none():
+    pid = PID(1, 1, 0, setpoint=10, sample_time=None)
+    assert pid(float("nan")) is None
+    # First finite sample still works
+    assert math.isfinite(pid(0))
+
+
+
+def test_non_finite_variants_and_none_bool():
+    pid = PID(1, 0, 0, setpoint=10, sample_time=None)
+    good = pid(5)
+    assert good == 5
+    before = pid.components
+    for bad in (float('nan'), float('inf'), float('-inf'), None, True, False):
+        assert pid(bad) == good
+        assert pid.components == before
+    assert pid(5) == 5

@@ -1,3 +1,5 @@
+import math
+
 def _clamp(value, limits):
     lower, upper = limits
     if value is None:
@@ -108,6 +110,9 @@ class PID(object):
 
         :param dt: If set, uses this value for timestep instead of real time. This can be used in
             simulations when simulation time is different from real time.
+
+        Non-finite measurements (NaN/inf), ``None``, and ``bool`` inputs are ignored: the previous
+        output is returned unchanged so a bad sample cannot corrupt controller state.
         """
         if not self.auto_mode:
             return self._last_output
@@ -120,6 +125,11 @@ class PID(object):
 
         if self.sample_time is not None and dt < self.sample_time and self._last_output is not None:
             # Only update every sample_time seconds
+            return self._last_output
+
+        # Ignore non-finite measurements so a single bad sample cannot poison I-state
+        # or force a non-finite actuator command (see issue #92).
+        if input_ is None or isinstance(input_, bool) or not math.isfinite(float(input_)):
             return self._last_output
 
         # Compute error terms
