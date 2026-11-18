@@ -9,6 +9,28 @@ def test_zero():
     assert pid(0) == 0
 
 
+def test_mapped_error_has_no_derivative_at_constant_input():
+    pid = PID(0, 0, 1, sample_time=None, differential_on_measurement=False,
+              error_map=lambda error: error + 100)
+    assert pid(2, dt=0.1) == 0
+    assert pid(2, dt=0.1) == 0
+    assert pid(2, dt=0.1) == 0
+
+
+def test_derivative_uses_change_in_mapped_error():
+    pid = PID(0, 0, 1, sample_time=None, differential_on_measurement=False,
+              error_map=lambda error: 2 * error)
+    assert pid(0, dt=0.1) == 0
+    assert pid(1, dt=0.1) == pytest.approx(-20)
+    assert pid(3, dt=0.1) == pytest.approx(-40)
+
+
+def test_error_map_preserves_derivative_on_measurement():
+    pid = PID(0, 0, 1, sample_time=None, error_map=lambda error: error + 100)
+    assert pid(0, dt=0.1) == 0
+    assert pid(1, dt=0.1) == pytest.approx(-10)
+
+
 def test_P():
     pid = PID(1, 0, 0, setpoint=10, sample_time=None)
     assert pid(0) == 10
