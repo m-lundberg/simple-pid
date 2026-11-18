@@ -125,11 +125,12 @@ class PID(object):
         # Compute error terms
         error = self.setpoint - input_
         d_input = input_ - (self._last_input if (self._last_input is not None) else input_)
-        d_error = error - (self._last_error if (self._last_error is not None) else error)
 
         # Check if must map the error
         if self.error_map is not None:
             error = self.error_map(error)
+
+        d_error = error - (self._last_error if (self._last_error is not None) else error)
 
         # Compute the proportional term
         if not self.proportional_on_measurement:
