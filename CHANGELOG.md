@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Tracking mode: back-calculation anti-windup driven by the output actually applied to the manipulated variable, given as `track_in_` when calling the PID, with tracking time constant `Tt`
+- `man_in`: when set, the output used in manual mode, clamped to the output limits. When None (the default), manual mode returns the last output as before
+- `holding` property, True when the last call held its output because the step was not a finite number
+
+### Fixed
+
+- A NaN or infinite input, setpoint, gain or dt no longer stays in the integral term and makes every later output NaN. The PID returns its previous output and keeps no state from that step
+
 ## [2.0.1] - 2024-07-21
 
 ### Fixed

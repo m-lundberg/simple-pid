@@ -296,3 +296,80 @@ def test_error_map():
 
     # Check if error value is mapped by the function
     assert pid(pv) == pi_clip(sp - pv)
+
+
+def test_manual_input():
+    pid = PID(1, 0, 0, setpoint=10, sample_time=None, output_limits=(0, 8))
+    assert pid(0) == 8
+
+    pid.auto_mode = False
+    # Without man_in, manual mode keeps the last output
+    assert pid(0) == 8
+
+    pid.man_in = 5
+    assert pid(0) == 5
+
+    # man_in is clamped to the output limits
+    pid.man_in = 20
+    assert pid(0) == 8
+
+    # A man_in that is not a number holds the last output
+    pid.man_in = 3
+    assert pid(0) == 3
+    pid.man_in = float('nan')
+    assert pid(0) == 3
+    assert pid.holding
+    pid.man_in = 4
+    assert pid(0) == 4
+    assert not pid.holding
+
+
+def test_nan_hold():
+    pid = PID(1, 1, 0, setpoint=1, sample_time=None)
+    assert pid(0, dt=1) == 2
+    assert not pid.holding
+
+    # A NaN input holds the output and keeps no state from the step
+    assert pid(float('nan'), dt=1) == 2
+    assert pid.holding
+    assert pid.components == (1, 1, 0)
+
+    # The next good step carries on from the state before the bad one
+    assert pid(0, dt=1) == 3
+    assert not pid.holding
+
+    # The same for a NaN dt and an infinite setpoint
+    assert pid(0, dt=float('nan')) == 3
+    assert pid.holding
+    pid.setpoint = float('inf')
+    assert pid(0, dt=1) == 3
+    assert pid.holding
+    pid.setpoint = 1
+    assert pid(0, dt=1) == 4
+    assert pid.components == (1, 3, 0)
+
+
+def test_tracking():
+    # Actuator stuck at 0.5 while the PID asks for more
+    pid = PID(0, 1, 0, setpoint=1, sample_time=None, tracking_mode=True, Tt=1)
+    for _ in range(200):
+        pid(0, dt=0.1, track_in_=0.5)
+
+    # Without tracking the integral would keep growing. With it, the output settles at
+    # track_in_ + Ki * Tt * error
+    assert abs(pid(0, dt=0.1, track_in_=0.5) - 1.5) < 1e-6
+
+
+def test_tracking_errors():
+    pid = PID(1, 1, 0, setpoint=1, sample_time=None, tracking_mode=True)
+    with pytest.raises(ValueError):
+        pid(0, dt=1, track_in_=0)
+
+    pid.Tt = 1
+    with pytest.raises(ValueError):
+        pid(0, dt=1)
+
+    for Tt in (0, -1, float('nan')):
+        with pytest.raises(ValueError):
+            pid.Tt = Tt
+    assert pid.Tt == 1

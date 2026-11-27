@@ -1,3 +1,6 @@
+import math
+
+
 def _clamp(value, limits):
     lower, upper = limits
     if value is None:
@@ -21,6 +24,9 @@ class PID(object):
         sample_time=0.01,
         output_limits=(None, None),
         auto_mode=True,
+        man_in=None,
+        tracking_mode=False,
+        Tt=None,
         proportional_on_measurement=False,
         differential_on_measurement=True,
         error_map=None,
@@ -45,6 +51,14 @@ class PID(object):
             in that direction. Setting output limits also avoids integral windup, since the
             integral term will never be allowed to grow outside of the limits.
         :param auto_mode: Whether the controller should be enabled (auto mode) or not (manual mode)
+        :param man_in: Manual input. When not in auto mode, this value, clamped to the output
+            limits, is returned as the output. If None, the last output is returned instead.
+        :param tracking_mode: Whether the controller should track the value given as track_in_
+            when calling it, which should be the output actually applied to the manipulated
+            variable (MV). This is back-calculation anti-windup.
+        :param Tt: The tracking time constant, in the same time unit as dt, or None when not
+            set. Setting it to zero, a negative number or NaN raises ValueError. Tracking mode
+            needs it set. Keep Tt above dt / 2: below that the tracking step is unstable
         :param proportional_on_measurement: Whether the proportional term should be calculated on
             the input directly rather than on the error (which is the traditional way). Using
             proportional-on-measurement avoids overshoot for some types of systems.
@@ -63,9 +77,12 @@ class PID(object):
         self.Kp, self.Ki, self.Kd = Kp, Ki, Kd
         self.setpoint = setpoint
         self.sample_time = sample_time
+        self.man_in = man_in
+        self.Tt = Tt
 
         self._min_output, self._max_output = None, None
         self._auto_mode = auto_mode
+        self._tracking_mode = tracking_mode
         self.proportional_on_measurement = proportional_on_measurement
         self.differential_on_measurement = differential_on_measurement
         self.error_map = error_map
@@ -75,7 +92,8 @@ class PID(object):
         self._derivative = 0
 
         self._last_time = None
-        self._last_output = None
+        self._last_output_clamped = None
+        self._last_output_not_clamped = 0.0
         self._last_error = None
         self._last_input = None
 
@@ -96,9 +114,12 @@ class PID(object):
         self.reset()
 
         # Set initial state of the controller
-        self._integral = _clamp(starting_output, output_limits)
+        if tracking_mode:
+            self._integral = starting_output
+        else:
+            self._integral = _clamp(starting_output, output_limits)
 
-    def __call__(self, input_, dt=None):
+    def __call__(self, input_, dt=None, track_in_=None):
         """
         Update the PID controller.
 
@@ -106,11 +127,31 @@ class PID(object):
         sample_time seconds has passed since the last update. If no new output is calculated,
         return the previous output instead (or None if no value has been calculated yet).
 
+        The output is never NaN or infinite. A step that would give one - a NaN or infinite
+        input, setpoint, track_in_, gain or dt, or terms that overflow - holds instead: it
+        returns the previous output (None if there is none yet), changes no internal state,
+        and sets `holding` to True. So a bad value is not kept in the integral, and the next
+        good step carries on from the state before it. The same goes for a man_in that is
+        not a number in manual mode.
+
         :param dt: If set, uses this value for timestep instead of real time. This can be used in
             simulations when simulation time is different from real time.
+        :param track_in_: The output actually applied to the manipulated variable (MV), for
+            example after the actuator, a selector or an override. Required in tracking mode,
+            ignored otherwise.
         """
         if not self.auto_mode:
-            return self._last_output
+            if self.man_in is None:
+                # No manual value given: keep returning the last output
+                self._holding = False
+                return self._last_output_clamped
+            output_manual = _clamp(self.man_in, self.output_limits)
+            if not math.isfinite(output_manual):
+                self._holding = True
+                return self._last_output_clamped
+            self._holding = False
+            self._last_output_clamped = output_manual
+            return self._last_output_clamped
 
         now = self.time_fn()
         if dt is None:
@@ -118,47 +159,94 @@ class PID(object):
         elif dt <= 0:
             raise ValueError('dt has negative value {}, must be positive'.format(dt))
 
-        if self.sample_time is not None and dt < self.sample_time and self._last_output is not None:
+        if (
+            self.sample_time is not None
+            and dt < self.sample_time
+            and self._last_output_clamped is not None
+        ):
             # Only update every sample_time seconds
-            return self._last_output
+            return self._last_output_clamped
+
+        if self.tracking_mode and self.Tt is None:
+            raise ValueError(
+                'Tt is not set but tracking mode is active. It should be the '
+                'tracking time constant, a positive time'
+            )
+
+        if self.tracking_mode and track_in_ is None:
+            raise ValueError(
+                'track_in_ has no value but tracking mode is active. It should be the '
+                'output actually applied to the manipulated variable (MV)'
+            )
 
         # Compute error terms
         error = self.setpoint - input_
         d_input = input_ - (self._last_input if (self._last_input is not None) else input_)
         d_error = error - (self._last_error if (self._last_error is not None) else error)
 
+        if self.tracking_mode:
+            e_track = track_in_ - self._last_output_not_clamped
         # Check if must map the error
         if self.error_map is not None:
             error = self.error_map(error)
 
+        # The terms are worked out in locals and kept only if the output is a
+        # number, so a bad value never gets into the state - see the hold below.
+
         # Compute the proportional term
         if not self.proportional_on_measurement:
             # Regular proportional-on-error, simply set the proportional term
-            self._proportional = self.Kp * error
+            proportional = self.Kp * error
         else:
             # Add the proportional error on measurement to error_sum
-            self._proportional -= self.Kp * d_input
+            proportional = self._proportional - self.Kp * d_input
 
         # Compute integral and derivative terms
-        self._integral += self.Ki * error * dt
-        self._integral = _clamp(self._integral, self.output_limits)  # Avoid integral windup
+        #
+        # Tracking is dI/dt = e_track / Tt, with Tt a time constant, taken as
+        # one forward Euler step: the back-calculation of Astrom & Hagglund,
+        # with ar = dt/Tt. At the limit it multiplies the integral's distance
+        # from its resting point by (1 - dt/Tt). It swings past that point once
+        # dt > Tt, and each swing is bigger than the last once dt >= 2*Tt. The
+        # caller keeps Tt above dt / 2; should it not, the growing integral
+        # overflows, and the hold below catches it before the output is NaN.
+        if self.tracking_mode:
+            integral = self._integral + self.Ki * error * dt + e_track * dt / self.Tt
+        else:
+            integral = self._integral + self.Ki * error * dt
+            integral = _clamp(integral, self.output_limits)  # Avoid integral windup
 
         if self.differential_on_measurement:
-            self._derivative = -self.Kd * d_input / dt
+            derivative = -self.Kd * d_input / dt
         else:
-            self._derivative = self.Kd * d_error / dt
+            derivative = self.Kd * d_error / dt
 
         # Compute final output
-        output = self._proportional + self._integral + self._derivative
-        output = _clamp(output, self.output_limits)
+        output_auto = proportional + integral + derivative
+
+        # Hold. A NaN or infinite term makes the sum NaN or infinite too, so
+        # this one check covers them all. _clamp would pass a NaN straight
+        # through: NaN compares False against both limits. Nothing is kept,
+        # not even the time, so the next good step's dt and derivative run
+        # from the last good step.
+        if not math.isfinite(output_auto):
+            self._holding = True
+            return self._last_output_clamped
+        self._holding = False
+
+        output_auto_clamped = _clamp(output_auto, self.output_limits)
 
         # Keep track of state
-        self._last_output = output
+        self._proportional = proportional
+        self._integral = integral
+        self._derivative = derivative
+        self._last_output_clamped = output_auto_clamped
+        self._last_output_not_clamped = output_auto
         self._last_input = input_
         self._last_error = error
         self._last_time = now
 
-        return output
+        return output_auto_clamped
 
     def __repr__(self):
         return (
@@ -166,6 +254,7 @@ class PID(object):
             'Kp={self.Kp!r}, Ki={self.Ki!r}, Kd={self.Kd!r}, '
             'setpoint={self.setpoint!r}, sample_time={self.sample_time!r}, '
             'output_limits={self.output_limits!r}, auto_mode={self.auto_mode!r}, '
+            'tracking_mode={self.tracking_mode!r}, Tt={self.Tt!r}, '
             'proportional_on_measurement={self.proportional_on_measurement!r}, '
             'differential_on_measurement={self.differential_on_measurement!r}, '
             'error_map={self.error_map!r}'
@@ -181,9 +270,40 @@ class PID(object):
         return self._proportional, self._integral, self._derivative
 
     @property
+    def holding(self):
+        """Whether the last call held its output because the step was not a number.
+
+        See __call__. It goes back to False on the next call that gives a number.
+        """
+        return self._holding
+
+    @property
     def tunings(self):
         """The tunings used by the controller as a tuple: (Kp, Ki, Kd)."""
         return self.Kp, self.Ki, self.Kd
+
+    @property
+    def Tt(self):
+        """The tracking time constant, or None when it is not set."""
+        return self._Tt
+
+    @Tt.setter
+    def Tt(self, Tt):
+        """Set the tracking time constant. Zero, negative or NaN raises ValueError."""
+        # `not Tt > 0` is also true for NaN, which `Tt <= 0` would let through.
+        if Tt is not None and not Tt > 0:
+            raise ValueError(f'Tt must be a positive time, got {Tt}')
+        self._Tt = Tt
+
+    @property
+    def tracking_tuning(self):
+        """The time constant used in the tracking feedback loop (Tt)"""
+        return self.Tt
+
+    @tracking_tuning.setter
+    def tracking_tuning(self, Tt):
+        """Set the tracking time constant (Tt)."""
+        self.Tt = Tt
 
     @tunings.setter
     def tunings(self, tunings):
@@ -195,10 +315,30 @@ class PID(object):
         """Whether the controller is currently enabled (in auto mode) or not."""
         return self._auto_mode
 
+    @property
+    def tracking_mode(self):
+        """Whether the controller is currently in tracking mode or not."""
+        return self._tracking_mode
+
     @auto_mode.setter
     def auto_mode(self, enabled):
         """Enable or disable the PID controller."""
         self.set_auto_mode(enabled)
+
+    @tracking_mode.setter
+    def tracking_mode(self, enabled):
+        """Enable or disable tracking mode."""
+        self.set_tracking_mode(enabled)
+
+    def set_tracking_mode(self, enabled):
+        """
+        Enable or disable tracking mode.
+
+        In tracking mode, each call needs track_in_ and Tt must be set. The integral is not
+        clamped to the output limits; the tracking term keeps it consistent with the applied
+        output instead.
+        """
+        self._tracking_mode = enabled
 
     def set_auto_mode(self, enabled, last_output=None):
         """
@@ -219,7 +359,13 @@ class PID(object):
             self.reset()
 
             self._integral = last_output if (last_output is not None) else 0
-            self._integral = _clamp(self._integral, self.output_limits)
+            if not self.tracking_mode:
+                self._integral = _clamp(self._integral, self.output_limits)
+            # Tracking compares what was applied with the last unclamped output.
+            # reset() leaves 0 there, so the first step would read the whole
+            # applied value as a tracking error and kick the integral by it.
+            # The output the controller starts from is the integral just set.
+            self._last_output_not_clamped = self._integral
 
         self._auto_mode = enabled
 
@@ -246,9 +392,9 @@ class PID(object):
 
         self._min_output = min_output
         self._max_output = max_output
-
-        self._integral = _clamp(self._integral, self.output_limits)
-        self._last_output = _clamp(self._last_output, self.output_limits)
+        if not self.tracking_mode:
+            self._integral = _clamp(self._integral, self.output_limits)
+        self._last_output_clamped = _clamp(self._last_output_clamped, self.output_limits)
 
     def reset(self):
         """
@@ -264,6 +410,8 @@ class PID(object):
         self._integral = _clamp(self._integral, self.output_limits)
 
         self._last_time = self.time_fn()
-        self._last_output = None
+        self._last_output_clamped = None
+        self._last_output_not_clamped = 0.0
         self._last_input = None
         self._last_error = None
+        self._holding = False
